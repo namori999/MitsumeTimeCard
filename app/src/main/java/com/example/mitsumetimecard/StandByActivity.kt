@@ -50,6 +50,7 @@ class StandByActivity : AppCompatActivity() {
     val application = DakokuApplication()
     private val model: DakokuViewModel by viewModels {
         this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }
+
     }
 
     @SuppressLint("InlinedApi")
