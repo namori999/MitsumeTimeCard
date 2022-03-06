@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:id="@+id/headerTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="40dp"
+
+        android:textColor="@color/white"
+        android:textSize="32dp"
+        android:textStyle="bold"
+        tools:ignore="MissingConstraints"
+        tools:text="October 2019" />
+
+    <include
+        android:id="@+id/legendLayout"
+        layout="@layout/calendar_day_legend"
+         />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

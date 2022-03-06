@@ -1,0 +1,38 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Theme.MitsumeTimeCard" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+        <!-- Primary brand color. -->
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorPrimaryVariant">@color/colorAccentLight</item>
+        <item name="colorOnPrimary">#FFF</item>
+        <!-- Secondary brand color. -->
+        <item name="colorSecondary">@color/Yellow</item>
+        <item name="colorSecondaryVariant">@color/lightYellow</item>
+        <item name="colorOnSecondary">#000</item>
+        <!-- Status bar color. -->
+        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="Theme.AppCompat.Light.NoActionBar.Fullscreen" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:actionBarStyle">
+            @style/Widget.Theme.AppCompat.Light.NoActionBar.ActionBar.Fullscreen
+        </item>
+        <item name="android:windowActionBarOverlay">true</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
+
+    <style name="ThemeOverlay.MitsumeTimeCard.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/colorAccent</item>
+        <item name="fullscreenTextColor">#FFF</item>
+    </style>
+
+    <style name="NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "914385991139",
+    "firebase_url": "https://mitsume-timecard-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "mitsume-timecard",
+    "storage_bucket": "mitsume-timecard.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914385991139:android:6c841b4b70785a21ba5cd6",
+        "android_client_info": {
+          "package_name": "com.example.mitsumetimecard"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "914385991139-4g6i62o2pm8781cc2eehrnadhppvc8ad.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChne38rwoIGlCJGIpk40LnatJt_syIGBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "914385991139-4g6i62o2pm8781cc2eehrnadhppvc8ad.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
