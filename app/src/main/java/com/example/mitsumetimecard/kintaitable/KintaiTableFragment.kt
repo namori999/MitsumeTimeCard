@@ -53,25 +53,15 @@ class KintaiTableFragment() : Fragment(){
 
     private var userName:String = ""
 
-    lateinit var storage: FirebaseStorage
-
-    private var currentMonth:Int = 0
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
-
         return inflater.inflate(R.layout.kintai_table_layout, container, false)
-
     }
-
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        val storage = Firebase.storage
 
         // RecyclerView の設定
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recycleview)
@@ -79,7 +69,6 @@ class KintaiTableFragment() : Fragment(){
         recyclerView?.adapter =adapter
         recyclerView?.layoutManager = LinearLayoutManager(this.requireContext())
         recyclerView?.setHasFixedSize(true)
-
 
         //show userName
         viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
@@ -101,7 +90,6 @@ class KintaiTableFragment() : Fragment(){
 
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun update(o: Observable?, arg: Any?) {
-
                     }
 
                     @RequiresApi(Build.VERSION_CODES.O)
@@ -118,7 +106,6 @@ class KintaiTableFragment() : Fragment(){
                 })
             }
 
-
             override fun update(o: Observable?, arg: Any?) {
                 adapter?.notifyDataSetChanged()
             }
@@ -127,8 +114,6 @@ class KintaiTableFragment() : Fragment(){
 
         var name = userNameTxt?.text.toString()
         name = name.replace(("さん").toRegex(), "")
-
-
 
         adapter?.setOnItemClickListener(object : TableAdapter1.onItemClickListener {
             override fun onItemClick(position: Int) {
@@ -159,32 +144,8 @@ class KintaiTableFragment() : Fragment(){
         }
         dakokuViewModel = factory?.let { ViewModelProvider(this, it).get(DakokuViewModel::class.java) }!!
 
-
-        /*
-        val totalJitsudo:Double = application.repository.getTotalJitsudo(userName)
-        jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
-        jitudoModel.setJitsudo(totalJitsudo)
-        jitudoModel.dataSet.observe(viewLifecycleOwner, object : Observer,
-            androidx.lifecycle.Observer<Double> {
-
-            override fun update(o: Observable?, arg: Any?) {
-                val totalJitudo = o!!.toString()
-                Log.d("model / totaljitsudo","$totalJitudo")
-                view.findViewById<TextView>(R.id.sumTxt).setText(totalJitudo.toString() + " h")
-            }
-
-            override fun onChanged(t: Double?) {
-                Log.d("model / totaljitsudo","$t")
-                view.findViewById<TextView>(R.id.sumTxt).setText(t!!.toString() + " h")
-            }
-
-        })
-        */
-
         var cal = Calendar.getInstance()
         val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val after = df.format(cal.time)
-
 
         val nextMonthButton :LinearLayout = view.findViewById(R.id.nextMonth)
         nextMonthButton.setOnClickListener(){
@@ -224,7 +185,8 @@ class KintaiTableFragment() : Fragment(){
         println(list.filter { it.date!!.startsWith("${selectedMonth}")})
         adapter?.notifyDataSetChanged()
 
-        val totalJitudo:Double? = filterdList?.sumOf { it.jitsudo!! }
+        val nullcheckList = filterdList
+        val totalJitudo:Double? = nullcheckList?.sumOf { it.jitsudo!! }
         view?.findViewById<TextView>(R.id.sumTxt)?.setText(totalJitudo.toString() + " h")
 
     }
@@ -239,7 +201,6 @@ class KintaiTableFragment() : Fragment(){
             androidx.lifecycle.Observer<Any>  {
 
             override fun update(o: Observable?, arg: Any?) {
-                TODO("Not yet implemented")
             }
 
             override fun onChanged(t: Any?) {
@@ -266,11 +227,9 @@ class KintaiTableFragment() : Fragment(){
         val adapter = this.activity?.let { TableAdapter1(it) }
         adapter?.notifyDataSetChanged()
         val totalJitsudo:Double = application.repository.getTotalJitsudo(userName)
-
         jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
         jitudoModel.setJitsudo(totalJitsudo)
     }
-
 }
 
 private fun Any.toInt(): Any {

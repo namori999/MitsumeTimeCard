@@ -69,9 +69,6 @@ abstract class DakokuDatabase : RoomDatabase() {
         var INSTANCE: DakokuDatabase? = null
 
 
-
-
-
         @SuppressLint("RestrictedApi")
         fun getDatabase(
             context: Context,

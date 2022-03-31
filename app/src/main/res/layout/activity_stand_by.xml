@@ -5,12 +5,11 @@
     android:id="@+id/stand_by_activity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:background="@color/colorAccent"
-
     android:theme="@style/ThemeOverlay.MitsumeTimeCard.FullscreenContainer"
     tools:context=".StandByActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:keepScreenOn="true">
 
 
 
@@ -21,10 +20,6 @@
         android:layout_gravity="center"
         android:outlineSpotShadowColor="@color/Yellow"
         android:visibility="gone" />
-
-        />
-
-
 
     <ImageView
         android:id="@+id/settingBtn"
@@ -43,15 +38,11 @@
         android:orientation="vertical"
         android:paddingTop="50dp">
 
-        <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
         <TextView
-            android:id="@+id/fullscreen_content"
+            android:id="@+id/standByDate"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:keepScreenOn="true"
             android:text="@string/dummy_content"
             android:textColor="@color/white"
             android:textSize="50sp"
@@ -96,7 +87,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_logoimage"
-        android:layout_gravity="start"
+        android:layout_gravity="center"
         />
 
 </FrameLayout>

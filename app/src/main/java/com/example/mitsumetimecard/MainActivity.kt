@@ -44,9 +44,7 @@ class MainActivity : AppCompatActivity() {
         this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }!!
     }
 
-    private lateinit var dao: DakokuDao
     private lateinit var database: DatabaseReference
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,35 +121,22 @@ class MainActivity : AppCompatActivity() {
 
 
 private fun init() {
-        // layouts of all welcome sliders
-        // add few more layouts if you want
         layouts = intArrayOf(
             R.layout.main_fragment,
             R.layout.fragment_calender,
             R.layout.kintai_table_layout
         )
         mAdapter = ViewsSliderAdapter()
-        // removing toolbar elevation
+
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
         viewPager.registerOnPageChangeCallback(pageChangeCallback)
-
     }
 
     private fun getItem(i: Int): Int {
         return viewPager.getCurrentItem() + i
     }
 
-    private fun launchHomeScreen() {
-        Toast.makeText(this, "slides ended", Toast.LENGTH_LONG).show()
-        finish()
-    }
-
-
-
-    /*
-     * ViewPager page change listener
-     */
     var pageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)

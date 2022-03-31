@@ -18,9 +18,7 @@ class DakokuApplication: Application()  {
 
     }
 
-
     val applicationScope = CoroutineScope(SupervisorJob())
-
     val database by lazy { DakokuDatabase.getDatabase(context, applicationScope) }
     val repository by lazy { Repository(database.dakokuDao()) }
 

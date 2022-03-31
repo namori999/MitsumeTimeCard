@@ -72,24 +72,17 @@ class MainFragment : Fragment() {
 
         })
 
-
-
         //get date and time
         val textDate = view?.findViewById<TextView>(R.id.textDate)
-
         val onlyDate: LocalDate = LocalDate.now()
-
         val date1: LocalDateTime = LocalDateTime.now()
         val dtformat2: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd E")
         val fdate2: String = dtformat2.format(date1)
         textDate?.setText("$fdate2")
 
 
-
         //data to insert
-
         val date = onlyDate.toString()
-
         val noSeconds: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
             .withLocale(Locale.JAPAN)
         var time = LocalTime.now().format(noSeconds)
@@ -104,8 +97,6 @@ class MainFragment : Fragment() {
         }else{
             marumeTime = marume.toInt()
         }
-
-
 
 
         //firebase database
@@ -151,10 +142,9 @@ class MainFragment : Fragment() {
 
             if (data == 0) {
 
-                val newdakoku = Dakoku(0, empname, date, marumeTime, null, null, null,"")
+                val newdakoku = Dakoku(0, empname, date, marumeTime, null, 0, null,"")
                 Log.v("TAG", "data to insert(Shukkin) : $newdakoku")
                 dakokuViewModel.insert(newdakoku)
-                //changesModel.setChange(Dakoku(0, empname, date, marumeTime, null, null, null,"insert"))
 
                 Toast.makeText(requireContext(), "出勤しました", Toast.LENGTH_SHORT)
                     .show()
@@ -172,13 +162,6 @@ class MainFragment : Fragment() {
                         val dakoku:Dakoku? = repository.getDakokuByDateName(date,empname)
                         val jitsudo = calcurateJitsudou(dakoku)
                         dakokuViewModel.updateJitsudo(jitsudo,date,empname)
-
-                        /*
-                        changesModel.setChange(
-                            Dakoku(0, empname, date, marumeTime, null, null, null,"update")
-                        )
-                        */
-
                     })
                     .setNegativeButton("キャンセル", { dialog, which ->
                         Log.v("TAG", "shukkin update is canseled")
@@ -198,10 +181,6 @@ class MainFragment : Fragment() {
                 val newdakoku = Dakoku(0, empname, date, null, marumeTime.toInt(),  selectedTime, 0.0,"")
                 Log.v("TAG", "data to insert(Taikin) : $newdakoku")
                 dakokuViewModel.insert(newdakoku)
-                //database.child("DakokuSheet").setValue(newdakoku)
-
-                changesModel.setChange(newdakoku)
-                changesModel.clearStock()
 
                 showAlertDialog(date,empname)
 

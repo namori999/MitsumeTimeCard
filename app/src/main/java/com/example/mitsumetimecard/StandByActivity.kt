@@ -2,6 +2,8 @@
 
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -19,12 +21,14 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
 import com.example.mitsumetimecard.employees.User
-import com.example.mitsumetimecard.setting.SettingFragment
+import com.example.mitsumetimecard.setting.*
 import com.example.mitsumetimecard.ui.main.MainViewModel
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
@@ -42,47 +46,23 @@ import java.time.format.DateTimeFormatter
  */
 class StandByActivity : AppCompatActivity() {
 
-    private lateinit var fullscreenContent: TextView
-    private lateinit var fullscreenContentControls: LinearLayout
-    private val hideHandler = Handler()
-
     private lateinit var database: DatabaseReference
+
     val application = DakokuApplication()
     private val model: DakokuViewModel by viewModels {
         this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }
-
     }
 
-    @SuppressLint("InlinedApi")
-    private val hidePart2Runnable = Runnable {
-
-        fullscreenContent.systemUiVisibility =
-            View.SYSTEM_UI_FLAG_LOW_PROFILE or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-    }
-
-    private var isFullscreen: Boolean = false
 
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        DakokuApplication.Companion.setContext(this);
+        DakokuApplication.setContext(this)
+        LestTimeApplication.setContext(this)
         setContentView(R.layout.activity_stand_by)
-
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
-        isFullscreen = true
-        fullscreenContent = findViewById(R.id.fullscreen_content)
-        fullscreenContentControls = findViewById(R.id.standbyTimerLayout)
-
-
 
         //set date
         val date1: LocalDateTime = LocalDateTime.now()
@@ -91,7 +71,7 @@ class StandByActivity : AppCompatActivity() {
         val fdate2: String = dtformat2.format(date1)
         Log.v("today :","$fdate2")
 
-        fullscreenContent.setText("$fdate2")
+        findViewById<TextView>(R.id.standByDate).setText("$fdate2")
 
 
         //firebase
@@ -189,7 +169,6 @@ class StandByActivity : AppCompatActivity() {
                         state
                     )
 
-
                     if (dakoku != null) {
                         dakokuList.add(dakoku)
                         model.insertFromFB(dakoku)
@@ -218,9 +197,6 @@ class StandByActivity : AppCompatActivity() {
 
 
     fun startSelectNameMode(list:MutableList<User>){
-
-        //Log.d("list","{$list}")
-
         //prepare employees list
         val recyclerView = findViewById<RecyclerView>(R.id.userList)
         recyclerView?.layoutManager = GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false)
@@ -239,14 +215,11 @@ class StandByActivity : AppCompatActivity() {
 
                 Log.v("name at position","${empname}")
 
-
                 val intent = Intent(this@StandByActivity, MainActivity ::class.java)
 
                 intent.putExtra("EMP_NAME",empname)
                 startActivity(intent)
                 this@StandByActivity.finish()
-
-
 
             }
         })
@@ -254,12 +227,10 @@ class StandByActivity : AppCompatActivity() {
     }
 
 
-
     private fun showPopup(v: View) {
         PopupMenu(this, v).apply {
             setOnMenuItemClickListener(object: PopupMenu.OnMenuItemClickListener {
                 override fun onMenuItemClick(item: MenuItem?): Boolean {
-                    fullscreenContentControls.visibility = GONE
 
                     return when (item?.itemId) {
                         R.id.SettingFragment -> {
@@ -268,8 +239,9 @@ class StandByActivity : AppCompatActivity() {
                                 getSupportFragmentManager()
                                     .beginTransaction()
                                     .add(R.id.stand_by_activity, currentFragment, "TAG")
+                                    .addToBackStack(null)
                                     .commit()
-                            };
+                            }
                             true
                         }
                         else -> false
@@ -284,26 +256,12 @@ class StandByActivity : AppCompatActivity() {
 
     override fun onStop(){
         super.onStop()
-
+        Log.d("stand by activity","stopped")
     }
 
     override fun onResume(){
         super.onResume()
-
-
-
+        Log.d("stand by activity","resumed")
     }
 
-
-
-
-
-
-
-    companion object {
-
-        private const val AUTO_HIDE = true
-        private const val AUTO_HIDE_DELAY_MILLIS = 3000
-
-    }
 }

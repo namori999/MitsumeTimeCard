@@ -9,11 +9,8 @@ interface EmpDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(empname:EmpName)
 
-
-
     @Update
     suspend fun update(empname: EmpName)
-
 
 
 

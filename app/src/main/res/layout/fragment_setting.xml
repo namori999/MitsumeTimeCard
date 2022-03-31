@@ -1,12 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/empSetFragment"
+    android:id="@+id/fragment_setting"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".setting.SettingFragment">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="50dp"
+        android:padding="50dp"
+        android:orientation="vertical"
+        android:background="@color/white"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="休憩時間 設定"
+            android:textSize="36px"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            android:layout_marginTop="30dp"
+          />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lestTimeList"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/colorAccentLight"/>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_edit_24"
+                app:tint="@color/colorAccent" />
+
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="200dp"
+                android:layout_height="80dp"
+                android:backgroundTint="@color/white"
+                app:cardCornerRadius="100dp"
+                android:layout_margin="20dp"
+                android:padding="20dp"
+                android:layout_gravity="center">
+
+                <TextView
+                    android:id="@+id/tView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:textSize="30dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorAccent"
+                   />
+
+            </androidx.cardview.widget.CardView>
+
+                <SeekBar
+                    android:id="@+id/seekBar1"
+                    android:layout_width="400dp"
+                    android:layout_height="wrap_content"
+                    android:indeterminate="false"
+                    android:max="200"
+                    android:progress="0"
+                    app:tickMarkTint="@color/colorAccent"
+                    android:thumbTint="@color/colorAccent"
+                    android:progressTint="@color/colorAccent"
+                    android:outlineAmbientShadowColor="@color/colorAccentLight"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:backgroundTint="@color/colorAccent"
+            android:background="@drawable/maru"
+            android:layout_marginTop="2dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:padding="20dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_add_24"/>
+
+            <TextView
+                android:id="@+id/addLestButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="休憩時間を追加する"
+                android:textStyle="bold"
+                android:textSize="24px"
+                android:textColor="@color/white"
+                android:paddingLeft="20dp"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
     <ImageView
+
         android:id="@+id/back"
         android:layout_width="100dp"
         android:layout_height="100dp"
@@ -17,21 +136,5 @@
         android:layout_margin="20dp" />
 
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="休憩時間を設定"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:layout_gravity="center"
-            />
-
-    </LinearLayout>
 
 </FrameLayout>

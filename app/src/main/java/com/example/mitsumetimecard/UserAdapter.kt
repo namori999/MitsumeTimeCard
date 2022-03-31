@@ -17,9 +17,7 @@ class UserAdapter(val context: Context, var UserList: MutableList<User>) :  Recy
     fun submitList(myDataSet: List<User>?): List<User>? {
 
         this.UserList = myDataSet as ArrayList<User>
-        //これ大事。ないと、データ追加後に画面が更新されません。
         notifyDataSetChanged()
-
         return myDataSet
 
     }
@@ -49,7 +47,6 @@ class UserAdapter(val context: Context, var UserList: MutableList<User>) :  Recy
     ): UserAdapter.RecyclerViewHolder {
         val layoutInflater = LayoutInflater.from(context)
         val mView = layoutInflater.inflate(R.layout.userrow, parent, false)
-
 
         return RecyclerViewHolder(mView)
 

@@ -23,10 +23,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     private val mContext: Context? = context
     var myDataSet: List<Dakoku>? = null
 
-
-    // リスナー格納変数
     private lateinit var listener: onItemClickListener
-
     private var jitudoTimes = mutableListOf<Int>()
     private var totalTime = 0.0
 
@@ -34,9 +31,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     fun submitList(myDataSet: List<Dakoku>?): List<Dakoku>? {
         this.myDataSet = null
         this.myDataSet = myDataSet
-        //これ大事。ないと、データ追加後に画面が更新されません。
         notifyDataSetChanged()
-
         return myDataSet
 
     }
@@ -55,40 +50,27 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
         notifyDataSetChanged()
     }
 
-    //インターフェースの作成
     interface onItemClickListener {
         fun onItemClick(position: Int)
     }
-
 
     fun setOnItemClickListener(listener: onItemClickListener) {
         this.listener = listener
     }
 
     inner class RecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        inner class ItemClickListener{
-            fun onItemClick(view: View, position: Int) {
-
-            }
-
-        }
 
         var dateView: TextView
         var shukkinView: TextView
         var taikinView: TextView
         var restView: TextView
         var jitudouView: TextView
-
         var desView:LinearLayout
-
         var desShukkin: TextView
         var desTaikin: TextView
         var desKyukei: TextView
-
         var editButton: ImageView
-
         var cardView: CardView
-
 
         init {
             dateView = itemView.findViewById(R.id.DateTxt)
@@ -96,15 +78,11 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
             taikinView = itemView.findViewById(R.id.endTimeTxt)
             restView = itemView.findViewById(R.id.restTimeTxt)
             jitudouView = itemView.findViewById(R.id.jitudouTxt)
-
             desView = itemView.findViewById(R.id.description)
-
             desShukkin = itemView.findViewById(R.id.des_shukkin)
             desTaikin = itemView.findViewById(R.id.des_taikin)
             desKyukei = itemView.findViewById(R.id.des_kyukei)
-
             editButton = itemView.findViewById(R.id.editBtn)
-
             cardView = itemView.findViewById(R.id.card_view)
         }
     }
@@ -118,8 +96,6 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     @SuppressLint("ObjectAnimatorBinding")
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val current = myDataSet?.get(position)
-
-
         val shukkinTime = current?.shukkin
         val taikinTime = current?.taikin
         val lestTime = current?.lest

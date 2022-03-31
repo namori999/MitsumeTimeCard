@@ -14,31 +14,24 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
 
     val database = Firebase.database.reference
 
-
     fun insertFromFB (dakoku: Dakoku) = viewModelScope.launch {
         repository.insert(dakoku)
     }
 
     fun insert(dakoku: Dakoku) = viewModelScope.launch {
         repository.insert(dakoku)
-        //val dataForFirebase = Contents(dakoku.name,dakoku.shukkin,dakoku.taikin,dakoku.lest,dakoku.jitsudo,dakoku.state)
         database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakoku.makeString())
-
     }
 
     fun insertOrUpdate(dakoku: Dakoku) = viewModelScope.launch {
         repository.insertOrUpdate(dakoku)
-        //val dataForFirebase = Contents(dakoku.name.toString(),dakoku.shukkin.toString(),dakoku.taikin,dakoku.lest,dakoku.jitsudo,dakoku.state)
         database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakoku.makeString())
-
     }
 
 
     fun updateShukkin(shukkin:Int,date:String,name:String) = viewModelScope.launch {
         repository.updateShukiin(shukkin,date,name)
         database.child("DakokuSheet").child("/${date}-${name}").child("shukkin").setValue(shukkin)
-
-
     }
 
     fun updateTaikin(taikin:Int,date:String,name:String) = viewModelScope.launch {

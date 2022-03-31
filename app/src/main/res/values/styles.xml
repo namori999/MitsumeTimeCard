@@ -5,7 +5,18 @@
     </style>
 
     <style name="Widget.Theme.AppCompat.Light.NoActionBar.ButtonBar.Fullscreen" parent="">
+        <item name="colorPrimary">@color/colorAccent</item>
+        <item name="colorSecondary">@color/colorAccentLight</item>
         <item name="android:background">@color/Gray</item>
         <item name="android:buttonBarStyle">?android:attr/buttonBarStyle</item>
+    </style>
+
+    <style name="EditTextStyle" parent="Widget.AppCompat.EditText">
+        <item name="colorControlNormal">@color/colorAccentLight</item>
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="android:textCursorDrawable">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColorHint">@color/colorAccentLight</item>
+        <item name="android:textColorHighlight">@color/Yellow</item>
     </style>
 </resources>

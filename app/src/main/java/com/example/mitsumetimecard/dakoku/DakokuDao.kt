@@ -14,7 +14,6 @@ interface DakokuDao {
     @Update
     suspend fun update(table: Dakoku)
 
-
     @Query("UPDATE `table` SET date = :date,shukkinTime = :shukkin, taikinTime = :taikin ,lestTime = :lest ,jitsudoTime =:jitsudo,state = :state WHERE id = :id")
     suspend fun updateDakoku(date:String?,shukkin: Int?,taikin:Int?,lest: Int?,jitsudo:Double?,state:String? ,id: Int)
 
@@ -23,7 +22,6 @@ interface DakokuDao {
     suspend fun insertOrUpdateDakoku(table: Dakoku) {
         if (getDateRowCount(table.date!!,table.name!!) > 0) {
             // レコードがあれば更新
-            //editDakoku(table.date, table.shukkin, table.taikin , table.lest , table.jitsudo ,table.state ,table.id)
             updateDakoku(table.date, table.shukkin, table.taikin , table.lest , table.jitsudo ,table.state ,table.id)
 
         } else {
@@ -72,14 +70,11 @@ interface DakokuDao {
     @Query("SELECT * FROM `table` where id= :id")
     suspend fun getDakokuById(id: Int) : Dakoku?
 
-
     @Query("SELECT * FROM `table` where name= :name")
     fun getDakokuByName(name: String) : Flow<List<Dakoku>>
 
     @Query("SELECT * FROM `table` where name= :name")
     fun getDakokuListByName(name: String) : List<Dakoku>
-
-
 
 
     @Query("SELECT * FROM `table` where (date = :date)AND(name =:name)")
