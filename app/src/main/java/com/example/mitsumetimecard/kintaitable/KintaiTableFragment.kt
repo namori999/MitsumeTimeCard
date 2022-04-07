@@ -2,10 +2,10 @@ package com.example.mitsumetimecard.kintaitable
 
 
 import android.annotation.SuppressLint
-import android.icu.text.MessageFormat.format
+import android.app.Activity
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -26,15 +27,9 @@ import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
 import com.example.mitsumetimecard.ui.main.MainViewModel
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.ktx.storage
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
-import java.time.YearMonth
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.util.*
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
@@ -53,6 +48,8 @@ class KintaiTableFragment() : Fragment(){
 
     private var userName:String = ""
 
+    private var selectedMonth:String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -60,6 +57,7 @@ class KintaiTableFragment() : Fragment(){
         return inflater.inflate(R.layout.kintai_table_layout, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
@@ -75,16 +73,22 @@ class KintaiTableFragment() : Fragment(){
         val userNameTxt = view?.findViewById<TextView>(R.id.dakokushaTxt)
         val currentMonthText :TextView = view.findViewById(R.id.currentMonthText)
 
+        selectedMonth = LocalDate.now().toString().substring(0,7)
+        currentMonthText.setText(selectedMonth)
+
         viewModel.mutableLiveData.observe(viewLifecycleOwner, object : Observer,
             androidx.lifecycle.Observer<String> {
 
+            @RequiresApi(Build.VERSION_CODES.O)
             override fun onChanged(o: String?) {
                 //name
                 val selectedName = o!!.toString()
                 userNameTxt?.setText("$selectedName" + "さん")
                 userName = selectedName
 
+
                 val dakokuByName = application.repository.getDakokuByName(userName).asLiveData()
+
                 dakokuByName.observe(viewLifecycleOwner, object : Observer,
                     androidx.lifecycle.Observer<List<Dakoku>> {
 
@@ -94,20 +98,14 @@ class KintaiTableFragment() : Fragment(){
 
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onChanged(t: List<Dakoku>?) {
-                        val thisMonth = LocalDate.now().toString().substring(0,7)
-                        currentMonthText.setText("${thisMonth}" )
-                        val filterdList: List<Dakoku>? = t?.filter { it.date!!.startsWith("${thisMonth}")}
-                        adapter?.submitList(filterdList)
-
-                        val listToCalculate = filterdList?.filterNot{ it.shukkin == null}?.filterNot { it.taikin == null }
-                        val totalJitudo :Double? = listToCalculate?.sumOf { it.jitsudo!! }
-                        view.findViewById<TextView>(R.id.sumTxt).setText(totalJitudo.toString() + " h")
+                       updateList(selectedMonth)
                     }
                 })
+
             }
 
             override fun update(o: Observable?, arg: Any?) {
-                adapter?.notifyDataSetChanged()
+
             }
 
         })
@@ -115,27 +113,14 @@ class KintaiTableFragment() : Fragment(){
         var name = userNameTxt?.text.toString()
         name = name.replace(("さん").toRegex(), "")
 
-        adapter?.setOnItemClickListener(object : TableAdapter1.onItemClickListener {
-            override fun onItemClick(position: Int) {
-                /*
-                Toast.makeText(requireContext(),"${position}がタップされました", Toast.LENGTH_LONG)
-                    .show()
-                 */
-                val dakoku = adapter.getItem(position)
-                Log.v("dakoku at position","${dakoku}")
-                val shukkinTime = dakoku?.shukkin.toString()
-                val taikinTime = dakoku?.taikin.toString()
-                val lestTime = dakoku?.lest.toString()
-                val name = dakoku?.name
-                val date = dakoku?.date
 
-                UpdateDialogFragment.newInstance(
-                    "${shukkinTime}", "${taikinTime}", "${lestTime}", "${name}", "${date}"
-                ).show(fragmentManager!!, UpdateDialogFragment.TAG)
-
-            }
-        })
-
+        setFragmentResultListener("input"){ _, data ->
+            val selectedDate = data.getString("when","")
+            Log.d("callbackListner","selectedDate = $selectedDate")
+            selectedMonth = selectedDate.substring(0,7)
+            //updateList(selectedMonth)
+            currentMonthText.setText("${selectedMonth}" )
+        }
 
         val factory = activity?.application?.let {
             DakokuViewModel.ModelViewModelFactory(
@@ -173,22 +158,52 @@ class KintaiTableFragment() : Fragment(){
 
     @SuppressLint("NotifyDataSetChanged")
     private fun updateList(selectedMonth: String){
+        val adapter = this.activity?.let { TableAdapter1(it) }
+
+        val list:List<Dakoku> = application.repository.getDakokuListByName(userName)
+        val filterdList = list.filter { it.date!!.startsWith("${selectedMonth}")}
+        notifyDatasetChanged(adapter,filterdList)
+
+        val nullcheckList = filterdList.filterNotNull()
+        val totalJitudo:Double = Math.round(nullcheckList.sumOf {it.jitsudo!!} * 100.0) / 100.0
+
+        view?.findViewById<TextView>(R.id.sumTxt)?.setText(totalJitudo.toString() + " h")
+    }
+
+    private fun notifyDatasetChanged(adapter:com.example.mitsumetimecard.kintaitable.TableAdapter?,list:List<Dakoku>?){
+        adapter?.submitList(null)
+
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recycleview)
         val adapter = this.activity?.let { TableAdapter1(it) }
         recyclerView?.adapter =adapter
 
-        adapter?.clear()
-        val list:List<Dakoku> = application.repository.getDakokuListByName(userName)
-        val filterdList = list.filter { it.date!!.startsWith("${selectedMonth}")}
-        adapter?.submitList(filterdList)
-
-        println(list.filter { it.date!!.startsWith("${selectedMonth}")})
+        adapter?.submitList(list)
         adapter?.notifyDataSetChanged()
 
-        val nullcheckList = filterdList
-        val totalJitudo:Double? = nullcheckList?.sumOf { it.jitsudo!! }
-        view?.findViewById<TextView>(R.id.sumTxt)?.setText(totalJitudo.toString() + " h")
+        if (adapter != null) {
+            setListener(adapter)
+        }
 
+    }
+
+    private fun setListener(adapter: com.example.mitsumetimecard.kintaitable.TableAdapter) {
+        adapter?.setOnItemClickListener(object : TableAdapter1.onItemClickListener {
+            override fun onItemClick(position: Int) {
+
+                val dakoku = adapter.getItem(position)
+                Log.v("dakoku at position", "${dakoku}")
+                val shukkinTime = dakoku?.shukkin.toString()
+                val taikinTime = dakoku?.taikin.toString()
+                val lestTime = dakoku?.lest.toString()
+                val name = dakoku?.name
+                val date = dakoku?.date
+
+                UpdateDialogFragment.newInstance(
+                    "${shukkinTime}", "${taikinTime}", "${lestTime}", "${name}", "${date}"
+                ).show(fragmentManager!!, UpdateDialogFragment.TAG)
+
+            }
+        })
     }
 
 
@@ -214,25 +229,9 @@ class KintaiTableFragment() : Fragment(){
         return objects[0] as T?
     }
 
-
-    override fun onPause() {
-        super.onPause()
-        val adapter = this.activity?.let { TableAdapter1(it) }
-        adapter?.notifyDataSetChanged()
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        val adapter = this.activity?.let { TableAdapter1(it) }
-        adapter?.notifyDataSetChanged()
-        val totalJitsudo:Double = application.repository.getTotalJitsudo(userName)
-        jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
-        jitudoModel.setJitsudo(totalJitsudo)
-    }
 }
 
-private fun Any.toInt(): Any {
+fun Any.toInt(): Any {
     return  Int
 }
 

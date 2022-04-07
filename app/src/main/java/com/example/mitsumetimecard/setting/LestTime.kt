@@ -43,8 +43,12 @@ interface LestTimeDao {
     @Insert
     fun insertAll(users: List<lestTime>)
 
-    @Query("SELECT * FROM `lestTimeTable`")
+    @Query("SELECT * FROM `lestTimeTable` ORDER BY lestTime")
     fun getList(): List<lestTime>
+
+    @Query("SELECT * FROM `lestTimeTable` ORDER BY lestTime")
+    fun getMutableList(): MutableList<Int>
+
 
 
 }

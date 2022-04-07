@@ -12,11 +12,11 @@ data class Dakoku(
     @ColumnInfo(name = "date") var date:String?,
     @ColumnInfo(name = "shukkinTime") var shukkin: Int?,
     @ColumnInfo(name = "taikinTime") var taikin:Int?,
-    @ColumnInfo(name = "lestTime") var lest: Int?,
+    @ColumnInfo(name = "lestTime") var lest: Int,
     @ColumnInfo(name = "jitsudoTime") var jitsudo:Double?,
     @ColumnInfo(name = "state") var state:String?,
 
-){
+    ){
     fun makeString(): Contents {
         var shukkinFB :Int =0
         var taikinFB :Int =0

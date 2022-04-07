@@ -21,11 +21,9 @@ interface DakokuDao {
     @Transaction
     suspend fun insertOrUpdateDakoku(table: Dakoku) {
         if (getDateRowCount(table.date!!,table.name!!) > 0) {
-            // レコードがあれば更新
             updateDakoku(table.date, table.shukkin, table.taikin , table.lest , table.jitsudo ,table.state ,table.id)
 
         } else {
-            // レコードがなければ新規作成
             insert(table)
         }
     }
@@ -53,8 +51,6 @@ interface DakokuDao {
 
     @Query("DELETE FROM `table`")
     suspend fun deleteAll()
-
-
 
 
     @Query("SELECT * FROM `table`")

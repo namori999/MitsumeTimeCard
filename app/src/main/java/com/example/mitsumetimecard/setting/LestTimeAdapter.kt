@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.view.menu.MenuView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
@@ -21,7 +22,6 @@ import java.util.Collections.list
 
 class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  RecyclerView.Adapter<LestTimeAdapter.RecyclerViewHolder>() {
 
-    // リスナー格納変数
     private lateinit var listener: LestTimeAdapter.onItemClickListener
 
     //インターフェースの作成
@@ -68,15 +68,13 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
         val lestTimeList = list[position]
         holder?.let { it.nameView.text = lestTimeList.lestTime.toString() + "分" }
 
-
         holder.itemView?.setOnClickListener() {
             listener.onItemClick(position)
         }
 
-
         holder.nameLayout?.setOnClickListener() {
-            Toast.makeText(context, "${list[position]}}", Toast.LENGTH_LONG).show()
-            //holder.nameLayout.setCardBackgroundColor(R.color.colorAccentLight)
+
+            //Toast.makeText(context, "${list[position]}}", Toast.LENGTH_LONG).show()
 
             PopupMenu(context, holder.itemView).apply {
                 setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
@@ -86,17 +84,16 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
                     override fun onMenuItemClick(item: MenuItem): Boolean {
                         return when (item?.itemId) {
                             R.id.delete -> {
-                                val lestTimeList: List<lestTime> = application.database.lestTimeDao().getList()
+                                val lestTimeList: List<lestTime> =
+                                    application.database.lestTimeDao().getList()
                                 application.database.lestTimeDao().delete(lestTimeList[position])
-                                list = emptyList()
-                                submitList(lestTimeList)
-
-                                notifyItemRemoved(position)
+                                submitList(null)
+                                submitList(application.database.lestTimeDao().getList())
+                                notifyDataSetChanged()
 
                                 true
                             }
                             else -> {
-                                holder.itemView.setBackgroundColor(R.color.white)
                                 false
                             }
                         }
@@ -106,9 +103,8 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
                 inflate(R.menu.delete_menu)
                 show()
             }
-
-
         }
+
     }
 
     fun getItem(position: Int):lestTime {

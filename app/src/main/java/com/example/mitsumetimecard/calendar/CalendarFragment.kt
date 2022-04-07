@@ -1,6 +1,7 @@
 package com.example.mitsumetimecard.calendar
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -11,9 +12,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
+import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.os.HandlerCompat.postDelayed
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
@@ -83,6 +88,14 @@ open class CalenderFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        val context = this.requireContext()
+
+        setFragmentResultListener("input"){ _, data ->
+            val selectedDate = data.getString("toCalender","")
+            clearCurrentDakoku()
+            setCurrentDakoku(selectedDate)
+        }
+
         dateTxt = view?.findViewById<TextView>(R.id.dateTxt)
         shukkinTxt = view?.findViewById<TextView>(R.id.shukkinTxt)
         taikinTxt = view?.findViewById<TextView>(R.id.taiknTxt)
@@ -120,13 +133,13 @@ open class CalenderFragment : Fragment() {
             val name = userName
             val date = selectedDate
 
-            UpdateDialogFragment.newInstance(
-                "${shukkinTime}", "${taikinTime}", "${lestTime}", "${name}", "${date}"
-            ).show(fragmentManager!!, UpdateDialogFragment.TAG)
-
-            Handler().postDelayed({
-                setCurrentDakoku(selectedDate.toString())
-            },10000)
+            if (date == null){
+                Toast.makeText(this.requireContext(),"日付を選択してください",LENGTH_SHORT)
+            } else {
+                UpdateDialogFragment.newInstance(
+                    "${shukkinTime}", "${taikinTime}", "${lestTime}", "${name}", "${date}"
+                ).show(fragmentManager!!, UpdateDialogFragment.TAG)
+            }
         }
 
         //calender view
@@ -167,9 +180,7 @@ open class CalenderFragment : Fragment() {
                         } else {
                             selectedDate = day.date
 
-
                             Log.v("selected dakoku", "$data")
-
 
                             calendarView.notifyDateChanged(day.date)
                             if (currentSelection != null) {
@@ -177,6 +188,8 @@ open class CalenderFragment : Fragment() {
                             }
 
                             setCurrentDakoku(selectedDate!!.toString())
+
+                            calendarView.scrollToDay(day)
                         }
                     }
 
@@ -202,10 +215,13 @@ open class CalenderFragment : Fragment() {
                     if (day.date == selectedDate) {
 
                         textView.setTextColor(Color.WHITE)
-                        textView.setBackgroundResource(R.drawable.selection_background)
-                    } else {
-                        textView.setTextColor(Color.BLACK)
-                        textView.background = null
+                        textView.setBackgroundResource(R.drawable.maru)
+                        textView.setBackgroundTintList(
+                            ContextCompat.getColorStateList(
+                                context, R.color.colorAccent
+                            )
+                        )
+
                     }
                 } else {
                     // Hide in and out dates
@@ -273,7 +289,8 @@ open class CalenderFragment : Fragment() {
             if (shukkin == 0) {
                 shukkinTxt?.setText("出勤 :　" + "")
             } else {
-                val shukintime = StringBuilder().append(shukkin).insert(2, ":")
+                val time = shukkin.toString().padStart(4, '0')
+                val shukintime = StringBuilder().append(time).insert(2, ":")
                 shukkinTxt?.setText("出勤 :　" + "$shukintime")
             }
 
@@ -281,7 +298,8 @@ open class CalenderFragment : Fragment() {
             if (taikin == 0) {
                 taikinTxt?.setText("退勤 :　" + "")
             } else {
-                val taikintime = StringBuilder().append(taikin).insert(2, ":")
+                val time = taikin.toString().padStart(4, '0')
+                val taikintime = StringBuilder().append(time).insert(2, ":")
                 taikinTxt?.setText("退勤 :　" + "$taikintime")
             }
 
@@ -293,6 +311,12 @@ open class CalenderFragment : Fragment() {
             }
 
         }
+    }
+
+    fun clearCurrentDakoku(){
+        view?.findViewById<TextView>(R.id.shukkinTxt)?.text =""
+        view?.findViewById<TextView>(R.id.taiknTxt)?.text =""
+        view?.findViewById<TextView>(R.id.kyukeiTxt)?.text =""
     }
 
     companion object {

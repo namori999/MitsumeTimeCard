@@ -90,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            val titles = arrayOf("打刻モード", "カレンダー","今月の記録")
+            val titles = arrayOf("打刻モード", "カレンダー","月別の記録")
             val currentPage = titles.get(position)
             tab.text = "${currentPage}"
         }.attach()

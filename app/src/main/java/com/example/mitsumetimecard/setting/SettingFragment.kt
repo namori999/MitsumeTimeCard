@@ -92,8 +92,11 @@ class SettingFragment : Fragment() {
         addButton.setOnClickListener(){
             application.database.lestTimeDao().insert(lestTime(sBar!!.progress))
             recyclerView.adapter = adapter
-            adapter.notifyItemInserted(list.size +1)
-            adapter.notifyItemRangeChanged(0,list.size)
+
+            adapter.submitList(null)
+            adapter.submitList(application.database.lestTimeDao().getList())
+
+            adapter.notifyDataSetChanged()
         }
 
 

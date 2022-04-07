@@ -1,6 +1,11 @@
 package com.example.mitsumetimecard.kintaitable
 
+import android.R.attr.button
+import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.Color.RED
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -12,7 +17,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.JitudoViewModel
 import com.example.mitsumetimecard.R
-import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
@@ -50,10 +54,6 @@ class UpdateDialogFragment : DialogFragment() {
         }
 
         var selectedDate:String =""
-        fun getDateToChange():String{
-            return selectedDate
-        }
-
 
     }
 
@@ -65,7 +65,6 @@ class UpdateDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.update_dialog, container, false)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -98,70 +97,83 @@ class UpdateDialogFragment : DialogFragment() {
             }
         }
 
-        changesModel = ChangesModel()
 
         view.findViewById<LinearLayout>(R.id.btnPositive).setOnClickListener {
 
-            val editS = view.findViewById<EditText>(R.id.des_shukkin).text.toString()
-            val editT = view.findViewById<EditText>(R.id.des_taikin).text.toString()
+            val editS =  view.findViewById<EditText>(R.id.des_shukkin).text.padStart(4, '0').toString()
+            val sH = editS.substring(0,2).toIntOrNull()
+            val sM = editS.substring(2,4).toIntOrNull()
+
+            val editT = view.findViewById<EditText>(R.id.des_taikin).text.padStart(4, '0').toString()
+            val tH = editT.substring(0,2).toIntOrNull()
+            val tM = editT.substring(2,4).toIntOrNull()
+
             val editL = view.findViewById<EditText>(R.id.des_kyukei).text.toString()
 
-            val name = arguments?.getString(KEY_NAME)
-            val date = arguments?.getString(KEY_DATE)
+            val name = arguments?.getString(KEY_NAME).toString()
+            val date = arguments?.getString(KEY_DATE).toString()
 
 
-            val dakoku = application.repository.getDakokuByDateName(
-                date.toString(),
-                name.toString()
-            )
+            val dakoku = application.repository.getDakokuByDateName(date, name)
             val id:Int
             if (dakoku?.id == null){
                 id = 0
-            }else{
-                id =dakoku.id
+            }else {
+                id = dakoku.id
             }
-
                 if (editS == "" && editT == ""){
-                    Toast.makeText(this.requireActivity(),"出勤/退勤 時間を追加してください",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.requireActivity(),"出勤/退勤 時間を追加してください", Toast.LENGTH_SHORT).show()
                 }else if (editS == "") {
-                    Toast.makeText(this.requireActivity(),"出勤時間を追加してください",Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this.requireActivity(),"出勤時間を追加してください", Toast.LENGTH_SHORT).show()
                 }else if(editT == "") {
-                    Toast.makeText(this.requireActivity(),"退勤時間を追加してください",Toast.LENGTH_SHORT).show()
-                }else {
-                    val jitsudo = calcurateJitsudo(editS.toInt(),editT.toInt())
+                    Toast.makeText(this.requireActivity(),"退勤時間を追加してください", Toast.LENGTH_SHORT).show()
+                }else if (sH != null && sH > 24) {
+                    Toast.makeText(this.requireActivity(), "出勤時間は 24時までを入力してください", Toast.LENGTH_SHORT).show()
+                } else if (sM != null && sM > 59) {
+                    Toast.makeText(this.requireActivity(), "出勤時間は 59分までを入力してください", Toast.LENGTH_SHORT).show()
+                } else if (tH != null && tH > 24) {
+                    Toast.makeText(this.requireActivity(), "退勤時間は 24時までを入力してください", Toast.LENGTH_SHORT).show()
+                } else if (tM != null && tM > 59) {
+                    Toast.makeText(this.requireActivity(), "退勤時間は 59分までを入力してください", Toast.LENGTH_SHORT).show()
+                } else {
 
-                    val data = Dakoku(
-                        id,
-                        name,
-                        date.toString(),
-                        editS.toInt(),
-                        editT.toInt(),
-                        editL.toInt(),
-                        jitsudo,
-                    ""
-                    )
+                    val jitsudo = editS.toIntOrNull()
+                        ?.let { it1 -> editT.toIntOrNull()
+                            ?.let { it2 -> calcurateJitsudo(it1, it2) } }
+                    if (jitsudo != null && jitsudo < 0.0) {
+                        Toast.makeText(this.requireActivity(), "実働時間がマイナスになります", Toast.LENGTH_SHORT).show()
+                    }else {
+                        val data = Dakoku(
+                            id,
+                            name,
+                            date.toString(),
+                            editS.toIntOrNull(),
+                            editT.toIntOrNull(),
+                            editL.toIntOrNull()!!,
+                            jitsudo,
+                            ""
+                        )
 
-                    dakokuViewModel.insertOrUpdate(data)
-                    changesModel.setChange( Dakoku(
-                        id,
-                        name,
-                        date.toString(),
-                        editS.toInt(),
-                        editT.toInt(),
-                        editL.toInt(),
-                        jitsudo,
-                        "Insert or Update"
-                    )
-                    )
-                    Log.v("TAG", "data to insert : $data")
+                        dakokuViewModel.insertOrUpdate(data)
 
-                    val totalJitsudo:Double = application.repository.getTotalJitsudo(name.toString())
-                    jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
-                    jitudoModel.setJitsudo(totalJitsudo)
+                        Log.v("TAG", "data to insert : $data")
 
-                    selectedDate = date.toString()
+                        val totalJitsudo: Double =
+                            application.repository.getTotalJitsudo(name.toString())
+                        jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
+                        jitudoModel.setJitsudo(totalJitsudo)
 
-                    dismiss()
+                        selectedDate = date.toString()
+
+                        //返したい情報をセット
+                        val dataTo = Bundle()
+                        dataTo.putString("when", selectedDate)
+                        dataTo.putString("toCalender", selectedDate)
+                        parentFragmentManager.setFragmentResult("input", dataTo)
+
+                        dismiss()
+                    }
+
                 }
 
         }
@@ -260,9 +272,18 @@ class UpdateDialogFragment : DialogFragment() {
         window.setGravity(Gravity.CENTER)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        Log.d("updateDialog","onDismiss")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("updateDialog","onDestroy")
+    }
+
+}
+
+private operator fun Any.compareTo(i: Int): Int {
+    return i
 }
