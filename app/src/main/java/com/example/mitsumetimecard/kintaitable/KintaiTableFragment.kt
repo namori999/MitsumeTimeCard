@@ -94,6 +94,7 @@ class KintaiTableFragment() : Fragment(){
 
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun update(o: Observable?, arg: Any?) {
+                        updateList(selectedMonth)
                     }
 
                     @RequiresApi(Build.VERSION_CODES.O)

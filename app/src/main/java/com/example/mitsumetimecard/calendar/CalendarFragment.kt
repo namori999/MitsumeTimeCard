@@ -213,7 +213,6 @@ open class CalenderFragment : Fragment() {
                     // Show the month dates. Remember that views are recycled!
                     textView.visibility = View.VISIBLE
                     if (day.date == selectedDate) {
-
                         textView.setTextColor(Color.WHITE)
                         textView.setBackgroundResource(R.drawable.maru)
                         textView.setBackgroundTintList(
@@ -221,7 +220,6 @@ open class CalenderFragment : Fragment() {
                                 context, R.color.colorAccent
                             )
                         )
-
                     }
                 } else {
                     // Hide in and out dates
@@ -252,13 +250,13 @@ open class CalenderFragment : Fragment() {
                     "${month.yearMonth.month.name.toLowerCase().capitalize()} ${month.year}"
 
                 // Setup each header day １text if we have not done that already.
-                container.txt1.text = "月"
-                container.txt2.text = "火"
-                container.txt3.text = "水"
-                container.txt4.text = "木"
-                container.txt5.text = "金"
-                container.txt6.text = "土"
-                container.txt7.text = "日"
+                container.txt1.text = "日"
+                container.txt2.text = "月"
+                container.txt3.text = "火"
+                container.txt4.text = "水"
+                container.txt5.text = "木"
+                container.txt6.text = "金"
+                container.txt7.text = "土"
             }
 
         }
@@ -288,6 +286,8 @@ open class CalenderFragment : Fragment() {
             val shukkin = data?.shukkin
             if (shukkin == 0) {
                 shukkinTxt?.setText("出勤 :　" + "")
+            } else if (shukkin.toString() == "null"){
+                shukkinTxt?.setText("出勤 : " + "")
             } else {
                 val time = shukkin.toString().padStart(4, '0')
                 val shukintime = StringBuilder().append(time).insert(2, ":")
@@ -297,6 +297,8 @@ open class CalenderFragment : Fragment() {
             val taikin = data?.taikin
             if (taikin == 0) {
                 taikinTxt?.setText("退勤 :　" + "")
+            } else if (taikin.toString() == "null"){
+                taikinTxt?.setText("退勤 : " + "")
             } else {
                 val time = taikin.toString().padStart(4, '0')
                 val taikintime = StringBuilder().append(time).insert(2, ":")
