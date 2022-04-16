@@ -1,4 +1,4 @@
-package com.example.mitsumetimecard
+package com.example.mitsumetimecard.user
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.mitsumetimecard.employees.User
+import com.example.mitsumetimecard.R
 
 
 class UserAdapter(val context: Context, var UserList: MutableList<User>) :  RecyclerView.Adapter<UserAdapter.RecyclerViewHolder>() {
     // リスナー格納変数
-    private lateinit var listener: UserAdapter.onItemClickListener
+    private lateinit var listener: onItemClickListener
 
     fun submitList(myDataSet: List<User>?): List<User>? {
 
@@ -26,7 +26,7 @@ class UserAdapter(val context: Context, var UserList: MutableList<User>) :  Recy
     interface onItemClickListener {
         fun onItemClick(position: Int)
     }
-    fun setOnItemClickListener(listener: UserAdapter.onItemClickListener) {
+    fun setOnItemClickListener(listener: onItemClickListener) {
         this.listener = listener
     }
 
@@ -44,7 +44,7 @@ class UserAdapter(val context: Context, var UserList: MutableList<User>) :  Recy
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): UserAdapter.RecyclerViewHolder {
+    ): RecyclerViewHolder {
         val layoutInflater = LayoutInflater.from(context)
         val mView = layoutInflater.inflate(R.layout.userrow, parent, false)
 
@@ -52,7 +52,7 @@ class UserAdapter(val context: Context, var UserList: MutableList<User>) :  Recy
 
     }
 
-    override fun onBindViewHolder(holder: UserAdapter.RecyclerViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         val current = UserList?.get(position)
 
         val username = current?.Name

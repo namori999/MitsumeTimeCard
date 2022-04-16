@@ -84,8 +84,7 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
                     override fun onMenuItemClick(item: MenuItem): Boolean {
                         return when (item?.itemId) {
                             R.id.delete -> {
-                                val lestTimeList: List<lestTime> =
-                                    application.database.lestTimeDao().getList()
+                                val lestTimeList: List<lestTime> = application.database.lestTimeDao().getList()
                                 application.database.lestTimeDao().delete(lestTimeList[position])
                                 submitList(null)
                                 submitList(application.database.lestTimeDao().getList())

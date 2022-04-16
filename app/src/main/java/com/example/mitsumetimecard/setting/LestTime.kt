@@ -10,7 +10,6 @@ import com.example.mitsumetimecard.StandByActivity
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuDao
 import com.example.mitsumetimecard.dakoku.Repository
-import com.example.mitsumetimecard.employees.EmpName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -59,13 +58,10 @@ abstract class LestTimeDatabase : RoomDatabase() {
 
     abstract fun lestTimeDao(): LestTimeDao
 
-
     private class databaseCallback(
         private val scope: CoroutineScope
     ) : RoomDatabase.Callback() {
-        /**
-         * Override the onCreate method to populate the database.
-         */
+
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
             // If you want to keep the data through app restarts,
@@ -75,19 +71,14 @@ abstract class LestTimeDatabase : RoomDatabase() {
                     populateDatabase(database.lestTimeDao())
                 }
             }
-
         }
 
         suspend fun populateDatabase(dao: LestTimeDao) {
-            // Start the app with a clean database every time.
-            // Not needed if you only populate on creation.
-
             dao.deleteAll()
             val lestTimeList = mutableListOf(
-                lestTime(0),lestTime(12), lestTime(30),lestTime(42),lestTime(60)
+                lestTime(12), lestTime(30),lestTime(42),lestTime(60)
             )
             dao.insertAll(lestTimeList)
-
         }
     }
 
@@ -132,6 +123,6 @@ class LestTimeApplication: Application()  {
     }
 
     val applicationScope = CoroutineScope(SupervisorJob())
-    val database by lazy { LestTimeDatabase.getDatabase(context, applicationScope) }
+    val database = LestTimeDatabase.getDatabase(context, applicationScope)
     val lestTimeDao = database.lestTimeDao()
 }

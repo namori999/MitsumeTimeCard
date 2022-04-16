@@ -4,7 +4,6 @@ package com.example.mitsumetimecard.kintaitable
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +14,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mitsumetimecard.JitudoViewModel
 import com.example.mitsumetimecard.R
-import com.example.mitsumetimecard.UserAdapter
 import com.example.mitsumetimecard.dakoku.Dakoku
-import com.google.android.material.tabs.TabLayout
 
 
 class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.RecyclerViewHolder>() {

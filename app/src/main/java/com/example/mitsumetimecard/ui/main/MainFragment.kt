@@ -15,10 +15,10 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.R
+import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
-import com.example.mitsumetimecard.employees.ChangesModel
 import com.example.mitsumetimecard.setting.LestTimeApplication
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -37,26 +37,18 @@ class MainFragment : Fragment() {
 
     var application = DakokuApplication()
     var dakokuViewModel = DakokuViewModel(application.repository)
-
     private var empname:String = ""
-
     private var selectedTime:Int =0
-
     private lateinit var database: DatabaseReference
-
     private lateinit var model: MainViewModel
-    private lateinit var changesModel: ChangesModel
-
     private val repository = dakokuViewModel.repository
     private var data: Int = 0
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
-
     }
 
     @SuppressLint("SetTextI18n", "ResourceAsColor", "UseCompatLoadingForColorStateLists")
@@ -71,6 +63,8 @@ class MainFragment : Fragment() {
         val dtformat2: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd E")
         val fdate2: String = dtformat2.format(date1)
         textDate?.setText("$fdate2")
+
+        CalenderFragment.selectedDate = onlyDate
 
         //data to insert
         val date = onlyDate.toString()
@@ -92,7 +86,6 @@ class MainFragment : Fragment() {
         //buttons
         val shukkinBtn = view?.findViewById<Button>(R.id.shukkinBtn)
         val taikinBtn = view?.findViewById<Button>(R.id.taikinBtn)
-
         val context = this.requireContext()
 
         //get username
@@ -122,11 +115,6 @@ class MainFragment : Fragment() {
 
         //firebase database
         database = Firebase.database.reference
-
-        //view model to stock changes
-        changesModel = ChangesModel()
-
-
 
         //onClick
         shukkinBtn?.setOnClickListener() {

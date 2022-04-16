@@ -23,10 +23,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mitsumetimecard.JitudoViewModel
 import com.example.mitsumetimecard.R
+import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
 import com.example.mitsumetimecard.ui.main.MainViewModel
+import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -45,6 +47,7 @@ class KintaiTableFragment() : Fragment(){
     lateinit var dakokuViewModel : DakokuViewModel
     private lateinit var viewModel: MainViewModel
     private lateinit var jitudoModel : JitudoViewModel
+    private lateinit var currentMonthText: TextView
 
     private var userName:String = ""
 
@@ -71,10 +74,10 @@ class KintaiTableFragment() : Fragment(){
         //show userName
         viewModel = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
         val userNameTxt = view?.findViewById<TextView>(R.id.dakokushaTxt)
-        val currentMonthText :TextView = view.findViewById(R.id.currentMonthText)
+        currentMonthText = view.findViewById(R.id.currentMonthText)
 
-        selectedMonth = LocalDate.now().toString().substring(0,7)
-        currentMonthText.setText(selectedMonth)
+        selectedMonth = CalenderFragment.selectedDate.toString().substring(0,7)
+        updateList(selectedMonth)
 
         viewModel.mutableLiveData.observe(viewLifecycleOwner, object : Observer,
             androidx.lifecycle.Observer<String> {
@@ -141,7 +144,6 @@ class KintaiTableFragment() : Fragment(){
             Log.v("selectedMonth","${selectedMonth}")
 
             updateList(selectedMonth)
-            currentMonthText.setText("${selectedMonth}" )
         }
 
         val previousMonthButton :LinearLayout = view.findViewById(R.id.previousMonth)
@@ -152,7 +154,6 @@ class KintaiTableFragment() : Fragment(){
             Log.v("selectedMonth","${selectedMonth}")
 
             updateList(selectedMonth)
-            currentMonthText.setText("${selectedMonth}" )
         }
 
     }
@@ -169,6 +170,7 @@ class KintaiTableFragment() : Fragment(){
         val totalJitudo:Double = Math.round(nullcheckList.sumOf {it.jitsudo!!} * 100.0) / 100.0
 
         view?.findViewById<TextView>(R.id.sumTxt)?.setText(totalJitudo.toString() + " h")
+        currentMonthText.setText("${selectedMonth}" )
     }
 
     private fun notifyDatasetChanged(adapter:com.example.mitsumetimecard.kintaitable.TableAdapter?,list:List<Dakoku>?){
@@ -228,6 +230,12 @@ class KintaiTableFragment() : Fragment(){
         liveData.observeForever(observer as androidx.lifecycle.Observer<in T>)
         latch.await(2, TimeUnit.SECONDS)
         return objects[0] as T?
+    }
+
+    override fun onResume() {
+        super.onResume()
+        selectedMonth = CalenderFragment.selectedDate.toString().substring(0,7)
+        updateList(selectedMonth)
     }
 
 }

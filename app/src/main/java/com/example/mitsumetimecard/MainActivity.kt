@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
@@ -18,16 +17,13 @@ import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
-import com.example.mitsumetimecard.dakoku.DakokuDao
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
-import com.example.mitsumetimecard.employees.ChangesModel
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import kotlinx.coroutines.flow.*
 import java.util.*
 
 

@@ -1,18 +1,12 @@
-package com.example.mitsumetimecard.kintaitable
+package com.example.mitsumetimecard.updatedialog
 
-import android.R.attr.button
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.DialogInterface
-import android.graphics.Color
-import android.graphics.Color.RED
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.JitudoViewModel
@@ -20,7 +14,6 @@ import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
-import com.example.mitsumetimecard.employees.ChangesModel
 import com.google.android.material.snackbar.Snackbar
 
 
@@ -29,8 +22,6 @@ class UpdateDialogFragment : DialogFragment() {
     var application = DakokuApplication()
     var dakokuViewModel = DakokuViewModel(application.repository)
     private lateinit var jitudoModel : JitudoViewModel
-    private lateinit var changesModel: ChangesModel
-
 
     companion object {
 
@@ -55,6 +46,8 @@ class UpdateDialogFragment : DialogFragment() {
 
         var selectedDate:String =""
 
+        lateinit var editD: EditText
+
     }
 
     override fun onCreateView(
@@ -73,13 +66,11 @@ class UpdateDialogFragment : DialogFragment() {
         val progress: ProgressBar? = view.findViewById(R.id.progress)
 
         val date = arguments?.getString(KEY_DATE)
-        val editD = view.findViewById<EditText>(R.id.des_date)
+        editD = view.findViewById<EditText>(R.id.des_date)
         editD.setOnClickListener(){
-            val calendarView = CalendarView(this.requireActivity())
-            calendarView.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-
-            val layout = view.findViewById<LinearLayout>(R.id.frameLayout)
-            layout.addView(calendarView)
+            val datePicker = DatePicker(this.requireContext())
+            datePicker.calendarViewShown = false
+            DatePickerFragment().show(requireFragmentManager(), "timePicker")
         }
 
         val name = arguments?.getString(KEY_NAME)
@@ -87,7 +78,6 @@ class UpdateDialogFragment : DialogFragment() {
             date.toString(),
             name.toString()
         )
-
 
         val deleteImg = view.findViewById<ImageView>(R.id.closeImg)
         deleteImg.setOnClickListener {
@@ -111,7 +101,7 @@ class UpdateDialogFragment : DialogFragment() {
             val editL = view.findViewById<EditText>(R.id.des_kyukei).text.toString()
 
             val name = arguments?.getString(KEY_NAME).toString()
-            val date = arguments?.getString(KEY_DATE).toString()
+            val date = editD.text.toString()
 
 
             val dakoku = application.repository.getDakokuByDateName(date, name)
@@ -146,7 +136,7 @@ class UpdateDialogFragment : DialogFragment() {
                         val data = Dakoku(
                             id,
                             name,
-                            date.toString(),
+                            date,
                             editS.toIntOrNull(),
                             editT.toIntOrNull(),
                             editL.toIntOrNull()!!,
@@ -204,6 +194,7 @@ class UpdateDialogFragment : DialogFragment() {
         }
     }
 
+
     private fun calcurateJitsudo(shukkinTime:Int,taikinTime:Int):Double {
 
         val startH: Int = (shukkinTime / 100) * 60
@@ -253,7 +244,8 @@ class UpdateDialogFragment : DialogFragment() {
             editL.setText(lest)
         }
 
-        view.findViewById<EditText>(R.id.des_date).setText("${ arguments?.getString(KEY_DATE)}")
+        val editD = view.findViewById<EditText>(R.id.des_date)
+        editD.setText("${ arguments?.getString(KEY_DATE)}")
 
     }
 

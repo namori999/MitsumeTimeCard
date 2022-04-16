@@ -23,17 +23,19 @@ import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
-import com.example.mitsumetimecard.kintaitable.UpdateDialogFragment
 import com.example.mitsumetimecard.ui.main.MainViewModel
+import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.kizitonwose.calendarview.model.CalendarDay
 import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
 import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
+import com.kizitonwose.calendarview.utils.yearMonth
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -52,8 +54,6 @@ open class CalenderFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private var selectedDate: LocalDate? = null
-
     var application = DakokuApplication()
     private lateinit var model: MainViewModel
     private var userName: String = ""
@@ -66,6 +66,19 @@ open class CalenderFragment : Fragment() {
     private lateinit var shukkinTxt :TextView
     private lateinit var taikinTxt :TextView
     private lateinit var kyukeiTxt :TextView
+
+
+    companion object {
+        fun newInstance(param1: String, param2: String) =
+            CalenderFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
+            }
+
+        lateinit var selectedDate: LocalDate
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,7 +96,7 @@ open class CalenderFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_calender, container, false)
     }
 
-    @SuppressLint("UseRequireInsteadOfGet")
+    @SuppressLint("UseRequireInsteadOfGet", "SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
@@ -169,31 +182,17 @@ open class CalenderFragment : Fragment() {
             init {
                 view.setOnClickListener {
                     if (day.owner == DayOwner.THIS_MONTH) {
-                        // Keep a reference to any previous selection
-                        // in case we overwrite it and need to reload it.
                         val currentSelection = selectedDate
-                        if (currentSelection == day.date) {
-                            // If the user clicks the same date, clear selection.
-                            selectedDate = null
+                        selectedDate = day.date
+
+                        calendarView.notifyDateChanged(day.date)
+                        if (currentSelection != null) {
                             calendarView.notifyDateChanged(currentSelection)
-
-                        } else {
-                            selectedDate = day.date
-
-                            Log.v("selected dakoku", "$data")
-
-                            calendarView.notifyDateChanged(day.date)
-                            if (currentSelection != null) {
-                                calendarView.notifyDateChanged(currentSelection)
-                            }
-
-                            setCurrentDakoku(selectedDate!!.toString())
-
-                            calendarView.scrollToDay(day)
                         }
-                    }
 
-                    Log.v("calender tapped", "{$day}")
+                        setCurrentDakoku(selectedDate!!.toString())
+                        calendarView.scrollToDay(day)
+                    }
                 }
             }
         }
@@ -231,14 +230,6 @@ open class CalenderFragment : Fragment() {
 
         class MonthViewContainer(view: View) : ViewContainer(view) {
             val textView = view.findViewById<TextView>(R.id.headerTextView)
-            val legendLayout = R.layout.calendar_day_legend
-            val txt1 = view.findViewById<TextView>(R.id.legendText1)
-            val txt2 = view.findViewById<TextView>(R.id.legendText2)
-            val txt3 = view.findViewById<TextView>(R.id.legendText3)
-            val txt4 = view.findViewById<TextView>(R.id.legendText4)
-            val txt5 = view.findViewById<TextView>(R.id.legendText5)
-            val txt6 = view.findViewById<TextView>(R.id.legendText6)
-            val txt7 = view.findViewById<TextView>(R.id.legendText7)
         }
 
         calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
@@ -246,20 +237,46 @@ open class CalenderFragment : Fragment() {
 
             @SuppressLint("SetTextI18n")
             override fun bind(container: MonthViewContainer, month: CalendarMonth) {
+                val monthTitleFormatter = DateTimeFormatter.ofPattern("MM")
                 container.textView.text =
-                    "${month.yearMonth.month.name.toLowerCase().capitalize()} ${month.year}"
+                    "${month.year}" +"-"+ "${monthTitleFormatter.format(month.yearMonth)}"
 
-                // Setup each header day １text if we have not done that already.
-                container.txt1.text = "日"
-                container.txt2.text = "月"
-                container.txt3.text = "火"
-                container.txt4.text = "水"
-                container.txt5.text = "木"
-                container.txt6.text = "金"
-                container.txt7.text = "土"
             }
 
         }
+
+
+        val yearText:TextView = view.findViewById(R.id.yearText)
+        val monthText :TextView = view.findViewById(R.id.monthText)
+        val monthTitleFormatter = DateTimeFormatter.ofPattern("MM")
+
+        calendarView.monthScrollListener = {
+            if (calendarView.maxRowCount == 6) {
+                yearText.text = it.yearMonth.year.toString()  + "-"
+                monthText.text = monthTitleFormatter.format(it.yearMonth)
+            } else {
+                val firstDate = it.weekDays.first().first().date
+                val lastDate = it.weekDays.last().last().date
+                if (firstDate.yearMonth == lastDate.yearMonth) {
+                    yearText.text = firstDate.yearMonth.year.toString()  + "-"
+                    monthText.text = monthTitleFormatter.format(firstDate)
+                } else {
+                    monthText.text =
+                        "${monthTitleFormatter.format(firstDate)} - ${
+                            monthTitleFormatter.format(
+                                lastDate
+                            )
+                        }"
+                    if (firstDate.year == lastDate.year) {
+                        yearText.text = firstDate.yearMonth.year.toString()  + "-"
+                    } else {
+                        yearText.text =
+                            "${firstDate.yearMonth.year} - ${lastDate.yearMonth.year}"  + "-"
+                    }
+                }
+            }
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -320,32 +337,5 @@ open class CalenderFragment : Fragment() {
         view?.findViewById<TextView>(R.id.taiknTxt)?.text =""
         view?.findViewById<TextView>(R.id.kyukeiTxt)?.text =""
     }
-
-    companion object {
-        fun newInstance(param1: String, param2: String) =
-            CalenderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPause() {
-        super.onPause()
-        Log.v("calenderFragment", "paused")
-
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onResume() {
-        super.onResume()
-
-        Log.v("calenderFragment", "resumed")
-
-    }
-
 
 }

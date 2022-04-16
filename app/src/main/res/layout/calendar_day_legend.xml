@@ -7,8 +7,7 @@
     android:gravity="center"
     android:orientation="horizontal"
     tools:ignore="HardcodedText"
-
-    android:paddingTop="70dp">
+    >
 
     <TextView
         android:id="@+id/legendText1"
@@ -16,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="SUN"
+        android:text="日"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="MON"
+        android:text="月"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -36,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="TUE"
+        android:text="火"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -46,7 +45,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="WED"
+        android:text="水"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -56,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="THU"
+        android:text="木"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -66,7 +65,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="FRI"
+        android:text="金"
         android:textColor="@color/white"
         android:textSize="14sp" />
 
@@ -76,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="SAT"
+        android:text="土"
         android:textColor="@color/white"
         android:textSize="14sp" />
 

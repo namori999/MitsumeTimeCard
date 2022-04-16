@@ -2,6 +2,7 @@
 
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -19,7 +20,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
-import com.example.mitsumetimecard.employees.User
+import com.example.mitsumetimecard.user.User
+import com.example.mitsumetimecard.user.UserAdapter
 import com.example.mitsumetimecard.setting.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -37,14 +39,12 @@ import java.time.format.DateTimeFormatter
  */
 class StandByActivity : AppCompatActivity() {
 
-    private lateinit var database: DatabaseReference
+     private lateinit var database: DatabaseReference
 
-    val application = DakokuApplication()
-    private val model: DakokuViewModel by viewModels {
+     val application = DakokuApplication()
+     private val model: DakokuViewModel by viewModels {
         this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }
-    }
-
-
+     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility", "ResourceAsColor")
@@ -70,6 +70,11 @@ class StandByActivity : AppCompatActivity() {
         val rootRef: DatabaseReference = database.child("EmpNameSpreadSheet")
 
         val progress= findViewById<ProgressBar>(R.id.progress)
+
+        //lestTimeDatabase
+        val application = LestTimeApplication()
+        application.database.lestTimeDao().getList()
+        Log.d("lestTimeArray","${application.database.lestTimeDao().getList()}")
 
         //creatuser list
         var valueList = arrayListOf<User>()
@@ -116,62 +121,65 @@ class StandByActivity : AppCompatActivity() {
 
                 for (h in dataSnapshot.children) {
 
-                    val date :String = h.key.toString().substring(0,10)
-                    val name :String = h.child("name").getValue().toString()
-
-                    var shukkin:Int =0
-                    if (h.child("shukkin").getValue().toString() == null){
-                        shukkin = 0
+                    if (h.child("state").getValue() == "deleted") {
+                        Log.v("deleted data", "${h.child("name")},${h.key}")
                     } else {
-                        shukkin = h.child("shukkin").getValue().toString().toInt()
-                    }
 
-                    var taikin:Int =0
-                    if (h.child("taikin").getValue().toString() == null){
-                        taikin = 0
-                    } else {
-                        taikin = h.child("taikin").getValue().toString().toInt()
-                    }
+                        val date: String = h.key.toString().substring(0, 10)
+                        val name: String = h.child("name").getValue().toString()
 
-                    var lest:Int =0
-                    if (h.child("lest").getValue().toString() == null){
-                        lest = 0
-                    } else {
-                        lest = h.child("lest").getValue().toString().toInt()
-                    }
+                        var shukkin: Int = 0
+                        if (h.child("shukkin").getValue().toString() == null) {
+                            shukkin = 0
+                        } else {
+                            shukkin = h.child("shukkin").getValue().toString().toInt()
+                        }
 
-                    var jitsudo:Double =0.0
-                    if (h.child("jitsudo").getValue().toString() == null){
-                        jitsudo = 0.0
-                    } else {
-                        jitsudo = h.child("jitsudo").getValue().toString().toDouble()
-                    }
+                        var taikin: Int = 0
+                        if (h.child("taikin").getValue().toString() == null) {
+                            taikin = 0
+                        } else {
+                            taikin = h.child("taikin").getValue().toString().toInt()
+                        }
 
-                    val state :String = h.child("state").getValue().toString()
+                        var lest: Int = 0
+                        if (h.child("lest").getValue().toString() == null) {
+                            lest = 0
+                        } else {
+                            lest = h.child("lest").getValue().toString().toInt()
+                        }
 
-                    val dakoku = Dakoku(
-                        0,
-                        name,
-                        date,
-                        shukkin,
-                        taikin,
-                        lest,
-                        jitsudo,
-                        state
-                    )
+                        var jitsudo: Double = 0.0
+                        if (h.child("jitsudo").getValue().toString() == null) {
+                            jitsudo = 0.0
+                        } else {
+                            jitsudo = h.child("jitsudo").getValue().toString().toDouble()
+                        }
 
-                    if (dakoku != null) {
+                        val state: String = h.child("state").getValue().toString()
+
+                        val dakoku = Dakoku(
+                            0,
+                            name,
+                            date,
+                            shukkin,
+                            taikin,
+                            lest,
+                            jitsudo,
+                            state
+                        )
+
+
                         dakokuList.add(dakoku)
                         model.insertFromFB(dakoku)
+
                     }
-                        //Log.v("datasnapshot","add data {$value}")
+
+                    val list = dakokuList
+                    //Log.d("dakoku list","${list}")
+                    progress.visibility = GONE
 
                 }
-
-                val list = dakokuList
-                Log.d("dakoku list","${list}")
-                progress.visibility = GONE
-
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // Getting Post failed, log a message

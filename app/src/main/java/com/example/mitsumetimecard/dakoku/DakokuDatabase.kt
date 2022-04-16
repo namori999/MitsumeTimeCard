@@ -91,8 +91,6 @@ abstract class DakokuDatabase : RoomDatabase() {
                 instance
             }
         }
-
-
     }
 
 
