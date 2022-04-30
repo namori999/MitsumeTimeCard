@@ -10,85 +10,80 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginRight="60dp"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal"
-        android:weightSum="3"
-        android:layout_margin="60dp"
-        >
+        android:weightSum="3">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="2"
-            app:cardCornerRadius="0dp"
             android:layout_gravity="top"
             android:layout_marginRight="60dp"
-            >
+            android:layout_weight="2"
+            app:cardCornerRadius="0dp">
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_gravity="right"
-                android:paddingBottom="20dp"
                 android:background="@color/Yellow"
-                />
+                android:paddingBottom="20dp" />
 
             <LinearLayout
                 android:id="@+id/currentDakoku"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_margin="20dp"
-                android:paddingTop="50dp"
-                android:visibility="visible"
                 android:layout_gravity="top"
+                android:layout_margin="20dp"
+                android:orientation="vertical"
+                android:paddingTop="50dp"
                 android:paddingBottom="50dp"
-                >
+                android:visibility="visible">
 
                 <TextView
                     android:id="@+id/dateTxt"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="30dp"
-                    android:text="20xx-xx-xx"
                     android:paddingBottom="20dp"
-                    android:textStyle="bold"
+                    android:text="20xx-xx-xx"
                     android:textColor="@color/black"
-                   />
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_gravity="right"
-                   android:layout_marginBottom="20dp"
-                    android:background="@color/black" />
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/shukkinTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20px"
+                    android:layout_margin="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
                     android:text="出勤："
-                    android:textSize="30px"
-                    android:layout_marginBottom="10dp"/>
+                    android:textSize="18sp" />
+
                 <TextView
                     android:id="@+id/taiknTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20px"
+                    android:layout_margin="2dp"
+                    android:layout_marginBottom="10dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
                     android:text="退勤："
-                    android:textSize="30px"
-                    android:layout_marginBottom="10dp"/>
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/kyukeiTxt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20px"
+                    android:layout_margin="2dp"
+                    android:autoSizeTextType="uniform"
                     android:gravity="center"
-                    android:textSize="30px"
-                    android:text="休憩：" />
-
+                    android:text="休憩："
+                    android:textSize="18sp" />
 
 
             </LinearLayout>
@@ -98,10 +93,10 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_gravity="bottom|right"
+                android:layout_margin="20dp"
                 android:background="@drawable/maru"
                 android:backgroundTint="@color/Gray"
                 android:padding="10dp"
-                android:layout_margin="20dp"
                 android:src="@drawable/ic_baseline_edit_24"
                 app:tint="@color/white" />
 
@@ -111,14 +106,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:background="@color/colorAccent"
+                android:orientation="vertical"
                 android:padding="14dp">
 
 
@@ -153,15 +148,12 @@
 
 
                 <include
-                    android:layout_height="wrap_content"
                     android:id="@+id/legendLayout"
                     layout="@layout/calendar_day_legend"
-                    />
+                    android:layout_height="wrap_content" />
 
 
             </LinearLayout>
-
-
 
 
             <com.kizitonwose.calendarview.CalendarView
@@ -169,10 +161,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="0dp"
-                app:cv_dayViewResource="@layout/calendar_day_layout"
-                app:cv_monthHeaderResource="@layout/calendar_month_header_layout"
                 android:background="@color/white"
-                />
+                app:cv_dayViewResource="@layout/calendar_day_layout" />
 
         </LinearLayout>
 

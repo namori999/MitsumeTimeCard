@@ -10,13 +10,18 @@
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_edit_24.xml" value="0.3635" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_edit_location_24.xml" value="0.3635" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.332" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_logoimage.xml" value="0.347" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_logoimage_icon.xml" value="0.347" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/kadomaru.xml" value="0.1935" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/maru.xml" value="0.1935" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/selection_background.xml" value="0.1935" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/side_nav_bar.xml" value="0.332" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/thumb_imaeg.xml" value="0.1935" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout-v21/main_activity.xml" value="0.2792607802874743" />
-        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/activity_stand_by.xml" value="0.153125" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout-v26/fragment_calender.xml" value="0.22" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout-v26/kintai_row.xml" value="0.3625" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout-v26/kintai_table_layout.xml" value="0.2" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/activity_stand_by.xml" value="0.2" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/calendar_day_layout.xml" value="0.9" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/calendar_day_legend.xml" value="0.5" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/calendar_month_header_layout.xml" value="0.153125" />
@@ -26,7 +31,7 @@
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_emp_set.xml" value="0.22552083333333334" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_setting.xml" value="0.27983539094650206" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/kintai_row.xml" value="0.3625" />
-        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/kintai_table_layout.xml" value="0.16" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/kintai_table_layout.xml" value="0.33" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/main_activity.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/main_fragment.xml" value="0.3302083333333333" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/update_dialog.xml" value="0.3625" />
@@ -34,6 +39,7 @@
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/menu/activity_main_drawer.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/menu/delete_menu.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/menu/setting_nav_menu.xml" value="0.3625" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.347" />
       </map>
     </option>
   </component>

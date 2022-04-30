@@ -77,7 +77,7 @@ open class CalenderFragment : Fragment() {
                 }
             }
 
-        lateinit var selectedDate: LocalDate
+        var selectedDate: LocalDate? = null
     }
 
 
@@ -191,7 +191,6 @@ open class CalenderFragment : Fragment() {
                         }
 
                         setCurrentDakoku(selectedDate!!.toString())
-                        calendarView.scrollToDay(day)
                     }
                 }
             }
@@ -219,6 +218,9 @@ open class CalenderFragment : Fragment() {
                                 context, R.color.colorAccent
                             )
                         )
+                    }else{
+                        textView.setTextColor(Color.BLACK)
+                        textView.background = null
                     }
                 } else {
                     // Hide in and out dates
@@ -232,6 +234,7 @@ open class CalenderFragment : Fragment() {
             val textView = view.findViewById<TextView>(R.id.headerTextView)
         }
 
+        /*
         calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
             override fun create(view: View) = MonthViewContainer(view)
 
@@ -242,9 +245,8 @@ open class CalenderFragment : Fragment() {
                     "${month.year}" +"-"+ "${monthTitleFormatter.format(month.yearMonth)}"
 
             }
-
-        }
-
+         }
+         */
 
         val yearText:TextView = view.findViewById(R.id.yearText)
         val monthText :TextView = view.findViewById(R.id.monthText)

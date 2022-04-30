@@ -7,18 +7,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".setting.SettingFragment"
+    android:background="@color/colorAccent"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="50dp"
+        android:layout_margin="24dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="50dp"
         android:background="@color/white"
         android:orientation="vertical"
-        android:padding="50dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/back"
         app:layout_constraintTop_toBottomOf="@+id/back"
@@ -29,19 +30,21 @@
             android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="0dp"
-            android:textSize="36px"
+            android:autoSizeTextType="uniform"
             android:text="休憩時間 設定"
             android:textColor="@color/colorAccent"
+            android:textSize="24sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/back"
             app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/lestTimeList"
             android:layout_width="match_parent"
             android:layout_height="200dp"
+            android:layout_margin="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/view"
             app:layout_constraintTop_toBottomOf="@+id/textView"
             tools:layout_editor_absoluteX="50dp" />
 
@@ -51,8 +54,9 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:background="@color/colorAccentLight"
-            app:layout_constraintTop_toBottomOf="@+id/lestTimeList"
-            tools:layout_editor_absoluteX="16dp" />
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+            tools:layout_editor_absoluteX="10dp"
+            android:layout_marginBottom="30dp"/>
 
 
         <LinearLayout
@@ -92,27 +96,22 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/view"
-            >
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_edit_24"
-                app:layout_constraintEnd_toStartOf="parent"
-                app:tint="@color/colorAccent" />
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+            tools:layout_editor_absoluteX="50dp">
 
             <SeekBar
                 android:id="@+id/seekBar1"
                 android:layout_width="400dp"
                 android:layout_height="wrap_content"
                 android:indeterminate="false"
+                android:paddingStart="50dp"
+                android:paddingEnd="50dp"
                 android:max="200"
                 android:min="1"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
                 android:progress="1"
                 android:progressTint="@color/colorAccent"
-                android:thumbTint="@color/colorAccent"
                 android:thumb="@drawable/thumb_image"
                 app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
                 app:layout_constraintTop_toBottomOf="@+id/view"
@@ -132,10 +131,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:paddingRight="8dp"
                     android:textColor="@color/colorAccent"
                     android:textSize="36px"
-                    android:textStyle="bold"
-                    android:paddingRight="8dp"/>
+                    android:textStyle="bold" />
 
             </androidx.cardview.widget.CardView>
         </LinearLayout>
@@ -157,6 +156,11 @@
         app:layout_constraintTop_toTopOf="parent"
      />
 
-
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:src="@drawable/ic_logoimage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

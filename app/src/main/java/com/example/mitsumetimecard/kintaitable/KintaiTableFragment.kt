@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.LiveData
@@ -136,9 +137,9 @@ class KintaiTableFragment() : Fragment(){
         var cal = Calendar.getInstance()
         val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
 
-        val nextMonthButton :LinearLayout = view.findViewById(R.id.nextMonth)
+        val nextMonthButton :View = view.findViewById(R.id.rightArrow)
         nextMonthButton.setOnClickListener(){
-            cal.add(Calendar.MONTH, 1)
+            cal.add(CalenderFragment.selectedDate!!.monthValue, 1)
             println("after: ${df.format(cal.time)}")
             val selectedMonth = "${df.format(cal.time)}".substring(0,7)
             Log.v("selectedMonth","${selectedMonth}")
@@ -146,9 +147,9 @@ class KintaiTableFragment() : Fragment(){
             updateList(selectedMonth)
         }
 
-        val previousMonthButton :LinearLayout = view.findViewById(R.id.previousMonth)
+        val previousMonthButton :View = view.findViewById(R.id.leftArrow)
         previousMonthButton.setOnClickListener(){
-            cal.add(Calendar.MONTH, -1)
+            cal.add(CalenderFragment.selectedDate!!.monthValue, -1)
             println("after: ${df.format(cal.time)}")
             val selectedMonth = "${df.format(cal.time)}".substring(0,7)
             Log.v("selectedMonth","${selectedMonth}")

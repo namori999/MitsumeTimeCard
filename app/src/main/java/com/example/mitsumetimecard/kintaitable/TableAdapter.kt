@@ -52,11 +52,6 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
         var taikinView: TextView
         var restView: TextView
         var jitudouView: TextView
-        var desView:LinearLayout
-        var desShukkin: TextView
-        var desTaikin: TextView
-        var desKyukei: TextView
-        var editButton: ImageView
         var cardView: CardView
 
         init {
@@ -65,11 +60,6 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
             taikinView = itemView.findViewById(R.id.endTimeTxt)
             restView = itemView.findViewById(R.id.restTimeTxt)
             jitudouView = itemView.findViewById(R.id.jitudouTxt)
-            desView = itemView.findViewById(R.id.description)
-            desShukkin = itemView.findViewById(R.id.des_shukkin)
-            desTaikin = itemView.findViewById(R.id.des_taikin)
-            desKyukei = itemView.findViewById(R.id.des_kyukei)
-            editButton = itemView.findViewById(R.id.editBtn)
             cardView = itemView.findViewById(R.id.card_view)
         }
     }
@@ -158,9 +148,6 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
 
         }
 
-        holder.editButton?.setOnClickListener() {
-            listener.onItemClick(position)
-        }
 
 
     }

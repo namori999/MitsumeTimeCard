@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/stand_by_activity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorAccent"
-    android:theme="@style/ThemeOverlay.MitsumeTimeCard.FullscreenContainer"
-    tools:context=".StandByActivity"
+    android:keepScreenOn="true"
     android:orientation="vertical"
-    android:keepScreenOn="true">
-
+    android:theme="@style/ThemeOverlay.MitsumeTimeCard.FullscreenContainer"
+    tools:context=".StandByActivity">
 
 
     <ProgressBar
@@ -19,24 +18,31 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:outlineSpotShadowColor="@color/Yellow"
-        android:visibility="gone" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/settingBtn"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_gravity="right"
-        android:padding="20px"
-        android:src="@drawable/ic_baseline_settings_24" />
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:padding="30dp"
+        android:src="@drawable/ic_baseline_settings_24"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
     <LinearLayout
         android:id="@+id/standbyTimerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:orientation="vertical"
-        android:paddingTop="50dp">
+        android:paddingTop="50dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/standByDate"
@@ -60,34 +66,42 @@
             android:textStyle="bold"
             tools:targetApi="jelly_bean_mr1" />
 
-
-        <TextView
-            android:id="@+id/choose_user_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_margin="20px"
-            android:layout_weight="1"
-            android:text="ユーザーをえらぶ"
-            android:textColor="@color/white"
-            android:textStyle="bold" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userList"
-            android:layout_width="wrap_content"
-            android:layout_height="250dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_margin="10dp"
-            android:orientation="horizontal" />
-
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/choose_user_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_margin="20px"
+        android:layout_weight="1"
+        android:text="ユーザーをえらぶ"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/standbyTimerLayout" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userList"
+        android:layout_width="wrap_content"
+        android:layout_height="240dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/choose_user_button" />
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_logoimage"
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
-        />
+        android:src="@drawable/ic_logoimage" />
 
-</FrameLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

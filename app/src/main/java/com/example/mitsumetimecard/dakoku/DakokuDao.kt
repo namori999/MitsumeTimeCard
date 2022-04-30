@@ -56,7 +56,7 @@ interface DakokuDao {
     @Query("SELECT * FROM `table`")
     fun getAll(): Flow<List<Dakoku>>
 
-    @Query("SELECT * FROM `table`")
+    @Query("SELECT * FROM `table` order by date")
     fun getList(): List<Dakoku>
 
     @Query("SELECT COUNT() FROM `table`")
@@ -69,7 +69,7 @@ interface DakokuDao {
     @Query("SELECT * FROM `table` where name= :name")
     fun getDakokuByName(name: String) : Flow<List<Dakoku>>
 
-    @Query("SELECT * FROM `table` where name= :name")
+    @Query("SELECT * FROM `table` where name= :name order by date")
     fun getDakokuListByName(name: String) : List<Dakoku>
 
 
