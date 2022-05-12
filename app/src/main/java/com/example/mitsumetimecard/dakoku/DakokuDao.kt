@@ -21,24 +21,38 @@ interface DakokuDao {
     @Transaction
     suspend fun insertOrUpdateDakoku(table: Dakoku) {
         if (getDateRowCount(table.date!!,table.name!!) > 0) {
-            updateDakoku(table.date, table.shukkin, table.taikin , table.lest , table.jitsudo ,table.state ,table.id)
+            if (table.jitsudo!! > 0.0) {
+                updateDakoku(
+                    table.date,
+                    table.shukkin,
+                    table.taikin,
+                    table.lest,
+                    table.jitsudo,
+                    table.state,
+                    table.id
+                )
+            }else{
+                updateDakoku(
+                    table.date,
+                    table.shukkin,
+                    table.taikin,
+                    table.lest,
+                    0.0,
+                    table.state,
+                    table.id
+                )
+            }
 
         } else {
             insert(table)
         }
     }
 
-
-    @Query("UPDATE `table` SET date = :date,shukkinTime = :shukkin, taikinTime = :taikin ,lestTime = :lest ,jitsudoTime =:jitsudo,state = :state WHERE id = :id")
-    fun editDakoku(date:String?,shukkin: Int?,taikin:Int?,lest: Int?,jitsudo:Double?,state:String? ,id: Int)
-
-
     @Query("UPDATE `table` SET shukkinTime = :shukkin WHERE (date =:date) AND (name =:name)")
     fun updateShukkin(shukkin: Int?, date: String,name: String)
 
     @Query("UPDATE `table` SET taikinTime = :taikin WHERE (date =:date) AND (name =:name)")
     fun updateTaikin(taikin: Int?, date: String,name: String)
-
 
     @Query("UPDATE `table` SET lestTime = :lest WHERE (date =:date) AND (name =:name)")
     fun updateLest(lest: Int?, date: String,name: String)
@@ -72,13 +86,14 @@ interface DakokuDao {
     @Query("SELECT * FROM `table` where name= :name order by date")
     fun getDakokuListByName(name: String) : List<Dakoku>
 
-
     @Query("SELECT * FROM `table` where (date = :date)AND(name =:name)")
     fun getDakokuByDateName(date: String,name: String) : Dakoku?
 
-    @Query("SELECT COUNT() FROM `table` WHERE (date = :date) AND (name = :name)")
-    fun  getDateRowCount(date:String,name:String): Int
+    @Query("SELECT * FROM `table` where (name =:name)AND(taikinTime = null or taikinTime = 0)")
+    fun getDakokuOnlyShukkin(name: String) : List<Dakoku>
 
+    @Query("SELECT COUNT() FROM `table` WHERE (date = :date) AND (name = :name)")
+    fun getDateRowCount(date:String,name:String): Int
 
     @Query("SELECT SUM(jitsudoTime) as totaljitsudo FROM `table` where (name = :name)" )
     fun getTotalJitsudo(name:String):Double

@@ -9,8 +9,6 @@ import kotlinx.coroutines.launch
 
 
 open class DakokuViewModel(val repository: Repository) : ViewModel() {
-    val allData: LiveData<List<Dakoku>> = repository.allWords.asLiveData()
-    val dakokuList: List<Dakoku> = repository.dakokuList
 
     val database = Firebase.database.reference
 
@@ -68,11 +66,6 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
     fun deleteAll() = viewModelScope.launch {
         repository.deleteAll()
     }
-
-    fun getTotalJitsudo(name:String) = viewModelScope.launch {
-        repository.getTotalJitsudo(name)
-    }
-
 
 
     class ModelViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {

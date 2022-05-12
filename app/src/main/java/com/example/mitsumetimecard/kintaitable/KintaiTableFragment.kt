@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.widget.TextViewCompat
 import androidx.fragment.app.Fragment
@@ -41,17 +42,15 @@ import com.example.mitsumetimecard.kintaitable.TableAdapter as TableAdapter1
 
 class KintaiTableFragment() : Fragment(){
 
-
-    private lateinit var nameViewModel: MainViewModel
     val application = DakokuApplication()
 
     lateinit var dakokuViewModel : DakokuViewModel
     private lateinit var viewModel: MainViewModel
-    private lateinit var jitudoModel : JitudoViewModel
     private lateinit var currentMonthText: TextView
 
     private var userName:String = ""
 
+    private lateinit var currentMonthDate:LocalDate
     private var selectedMonth:String = ""
 
     override fun onCreateView(
@@ -90,7 +89,6 @@ class KintaiTableFragment() : Fragment(){
                 userNameTxt?.setText("$selectedName" + "さん")
                 userName = selectedName
 
-
                 val dakokuByName = application.repository.getDakokuByName(userName).asLiveData()
 
                 dakokuByName.observe(viewLifecycleOwner, object : Observer,
@@ -106,7 +104,6 @@ class KintaiTableFragment() : Fragment(){
                        updateList(selectedMonth)
                     }
                 })
-
             }
 
             override fun update(o: Observable?, arg: Any?) {
@@ -115,63 +112,60 @@ class KintaiTableFragment() : Fragment(){
 
         })
 
-        var name = userNameTxt?.text.toString()
-        name = name.replace(("さん").toRegex(), "")
-
+        val factory = activity?.application?.let {
+            DakokuViewModel.ModelViewModelFactory(application.repository)
+        }
+        dakokuViewModel = factory?.let { ViewModelProvider(this, it).get(DakokuViewModel::class.java) }!!
 
         setFragmentResultListener("input"){ _, data ->
             val selectedDate = data.getString("when","")
             Log.d("callbackListner","selectedDate = $selectedDate")
             selectedMonth = selectedDate.substring(0,7)
-            //updateList(selectedMonth)
+            updateList(selectedMonth)
             currentMonthText.setText("${selectedMonth}" )
         }
 
-        val factory = activity?.application?.let {
-            DakokuViewModel.ModelViewModelFactory(
-                application.repository
-            )
+        if (CalenderFragment.selectedDate == null) {
+            currentMonthDate = CalenderFragment.selectedDate!!
+        }else{
+            currentMonthDate = LocalDate.now()
         }
-        dakokuViewModel = factory?.let { ViewModelProvider(this, it).get(DakokuViewModel::class.java) }!!
-
-        var cal = Calendar.getInstance()
-        val df: DateFormat = SimpleDateFormat("yyyy-MM-dd")
 
         val nextMonthButton :View = view.findViewById(R.id.rightArrow)
         nextMonthButton.setOnClickListener(){
-            cal.add(CalenderFragment.selectedDate!!.monthValue, 1)
-            println("after: ${df.format(cal.time)}")
-            val selectedMonth = "${df.format(cal.time)}".substring(0,7)
-            Log.v("selectedMonth","${selectedMonth}")
-
+            currentMonthDate = currentMonthDate.plusMonths(1)
+            selectedMonth = currentMonthDate.toString().substring(0,7)
+            Log.v("updatedMonth", selectedMonth)
             updateList(selectedMonth)
         }
 
         val previousMonthButton :View = view.findViewById(R.id.leftArrow)
         previousMonthButton.setOnClickListener(){
-            cal.add(CalenderFragment.selectedDate!!.monthValue, -1)
-            println("after: ${df.format(cal.time)}")
-            val selectedMonth = "${df.format(cal.time)}".substring(0,7)
-            Log.v("selectedMonth","${selectedMonth}")
+            currentMonthDate = currentMonthDate.minusMonths(1)
+            selectedMonth = currentMonthDate.toString().substring(0,7)
+            Log.v("uodatedMont", selectedMonth)
 
             updateList(selectedMonth)
         }
-
     }
 
-    @SuppressLint("NotifyDataSetChanged")
+    private fun getFilterdList(selectedMonth: String):List<Dakoku> {
+        val list:List<Dakoku> = application.repository.getDakokuListByName(userName)
+        val filterdList = list.filter { it.date!!.startsWith(selectedMonth)}
+        return filterdList
+    }
+
+    @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     private fun updateList(selectedMonth: String){
         val adapter = this.activity?.let { TableAdapter1(it) }
-
-        val list:List<Dakoku> = application.repository.getDakokuListByName(userName)
-        val filterdList = list.filter { it.date!!.startsWith("${selectedMonth}")}
+        val filterdList = getFilterdList(selectedMonth)
         notifyDatasetChanged(adapter,filterdList)
 
-        val nullcheckList = filterdList.filterNotNull()
+        val nullcheckList = filterdList
         val totalJitudo:Double = Math.round(nullcheckList.sumOf {it.jitsudo!!} * 100.0) / 100.0
 
-        view?.findViewById<TextView>(R.id.sumTxt)?.setText(totalJitudo.toString() + " h")
-        currentMonthText.setText("${selectedMonth}" )
+        view?.findViewById<TextView>(R.id.sumTxt)?.setText("$totalJitudo h")
+        currentMonthText.setText(selectedMonth)
     }
 
     private fun notifyDatasetChanged(adapter:com.example.mitsumetimecard.kintaitable.TableAdapter?,list:List<Dakoku>?){
@@ -187,11 +181,10 @@ class KintaiTableFragment() : Fragment(){
         if (adapter != null) {
             setListener(adapter)
         }
-
     }
 
     private fun setListener(adapter: com.example.mitsumetimecard.kintaitable.TableAdapter) {
-        adapter?.setOnItemClickListener(object : TableAdapter1.onItemClickListener {
+        adapter.setOnItemClickListener(object : TableAdapter1.onItemClickListener {
             override fun onItemClick(position: Int) {
 
                 val dakoku = adapter.getItem(position)
@@ -210,6 +203,16 @@ class KintaiTableFragment() : Fragment(){
         })
     }
 
+    private fun showJitsudoAlart(){
+        val filterdList = getFilterdList(selectedMonth)
+        for(i in filterdList.iterator()){
+            if (i.shukkin !=0 && i.taikin != 0 && i.jitsudo == 0.0){
+                Toast.makeText(this.requireContext(), "＊実働時間がマイナスになる日があります。" +
+                        "出退勤時間を確認してください。", Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+    }
 
     @Throws(InterruptedException::class)
     fun <T> getValue(liveData: LiveData<T>): T? {
@@ -235,8 +238,7 @@ class KintaiTableFragment() : Fragment(){
 
     override fun onResume() {
         super.onResume()
-        selectedMonth = CalenderFragment.selectedDate.toString().substring(0,7)
-        updateList(selectedMonth)
+        showJitsudoAlart()
     }
 
 }

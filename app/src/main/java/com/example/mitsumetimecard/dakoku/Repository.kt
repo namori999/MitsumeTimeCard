@@ -25,10 +25,6 @@ class Repository(private val dakokuDao: DakokuDao) {
         dakokuDao.insertOrUpdateDakoku(dakoku)
     }
 
-    fun editDakoku(date: String,shukkin: Int?,taikin:Int?,lest:Int?,jitsudo:Double?,state:String?,id:Int){
-        dakokuDao.editDakoku(date,shukkin,taikin,lest,jitsudo,state,id)
-    }
-
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
@@ -80,6 +76,9 @@ class Repository(private val dakokuDao: DakokuDao) {
         return  dakokuDao.getDakokuListByName(name)
     }
 
+    fun getDakokuOnlyShukkin(name:String):List<Dakoku>{
+        return dakokuDao.getDakokuOnlyShukkin(name)
+    }
 
     fun getDataRowCount(date:String,name:String): Int {
         return dakokuDao.getDateRowCount(date,name)

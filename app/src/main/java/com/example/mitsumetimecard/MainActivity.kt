@@ -83,7 +83,6 @@ class MainActivity : AppCompatActivity() {
         // removing toolbar elevation
 
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
-
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
 
@@ -100,9 +99,11 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         Log.d("mainActivity","Paused")
+    }
 
-        val list:List<Dakoku> = viewModel.dakokuList
-        Log.d("dakokuList","${list}")
+    override fun onResume(){
+        super.onResume()
+        hideSystemUI()
     }
 
 

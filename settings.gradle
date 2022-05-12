@@ -1,2 +1,3 @@
 rootProject.name = "MitsumeTimeCard"
 include ':app'
+include ':MenuSlideshow-master'

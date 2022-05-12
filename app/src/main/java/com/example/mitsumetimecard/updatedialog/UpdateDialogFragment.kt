@@ -2,11 +2,13 @@ package com.example.mitsumetimecard.updatedialog
 
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProviders
 import com.example.mitsumetimecard.JitudoViewModel
@@ -14,7 +16,9 @@ import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
+import com.example.mitsumetimecard.setting.LestTimeApplication
 import com.google.android.material.snackbar.Snackbar
+import java.util.ArrayList
 
 
 class UpdateDialogFragment : DialogFragment() {
@@ -47,6 +51,9 @@ class UpdateDialogFragment : DialogFragment() {
         var selectedDate:String =""
 
         lateinit var editD: EditText
+        lateinit var editS: EditText
+        lateinit var editT: EditText
+        lateinit var editL :EditText
 
     }
 
@@ -58,6 +65,7 @@ class UpdateDialogFragment : DialogFragment() {
         return inflater.inflate(R.layout.update_dialog, container, false)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -66,12 +74,30 @@ class UpdateDialogFragment : DialogFragment() {
         val progress: ProgressBar? = view.findViewById(R.id.progress)
 
         val date = arguments?.getString(KEY_DATE)
+
+        editS = view.findViewById<EditText>(R.id.des_shukkin)
+        editS.setOnClickListener{
+            TimePickerFragment.myTimePicker.showTimePicker(editS)
+        }
+
+        editT = view.findViewById<EditText>(R.id.des_taikin)
+        editT.setOnClickListener{
+            TimePickerFragment.myTimePicker.showTimePicker(editT)
+        }
+
         editD = view.findViewById<EditText>(R.id.des_date)
-        editD.setOnClickListener(){
+        editD.setOnClickListener{
             val datePicker = DatePicker(this.requireContext())
             datePicker.calendarViewShown = false
-            DatePickerFragment().show(requireFragmentManager(), "timePicker")
+            DatePickerFragment().show(requireFragmentManager(), "datePicker")
         }
+
+        editL = view.findViewById<EditText>(R.id.des_kyukei)
+        editL.setOnClickListener{
+           showAlertDialog()
+        }
+
+
 
         val name = arguments?.getString(KEY_NAME)
         val dakoku = application.repository.getDakokuByDateName(
@@ -127,42 +153,43 @@ class UpdateDialogFragment : DialogFragment() {
                     Toast.makeText(this.requireActivity(), "退勤時間は 59分までを入力してください", Toast.LENGTH_SHORT).show()
                 } else {
 
+                    val shukkin = editS.toIntOrNull()
+                    val taikin = editT.toIntOrNull()
+                    val kyukei = editL.toIntOrNull()
+
                     val jitsudo = editS.toIntOrNull()
                         ?.let { it1 -> editT.toIntOrNull()
                             ?.let { it2 -> calcurateJitsudo(it1, it2) } }
-                    if (jitsudo != null && jitsudo < 0.0) {
-                        Toast.makeText(this.requireActivity(), "実働時間がマイナスになります", Toast.LENGTH_SHORT).show()
-                    }else {
-                        val data = Dakoku(
-                            id,
-                            name,
-                            date,
-                            editS.toIntOrNull(),
-                            editT.toIntOrNull(),
-                            editL.toIntOrNull()!!,
-                            jitsudo,
-                            ""
-                        )
 
-                        dakokuViewModel.insertOrUpdate(data)
+                    val data = Dakoku(
+                        id,
+                        name,
+                        date,
+                        shukkin,
+                        taikin,
+                        kyukei!!,
+                        jitsudo,
+                        ""
+                    )
 
-                        Log.v("TAG", "data to insert : $data")
+                    dakokuViewModel.insertOrUpdate(data)
+                    Log.v("TAG", "data to insert : $data")
 
-                        val totalJitsudo: Double =
-                            application.repository.getTotalJitsudo(name.toString())
-                        jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
-                        jitudoModel.setJitsudo(totalJitsudo)
 
-                        selectedDate = date.toString()
+                    val totalJitsudo: Double =
+                        application.repository.getTotalJitsudo(name.toString())
+                    jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
+                    jitudoModel.setJitsudo(totalJitsudo)
 
-                        //返したい情報をセット
-                        val dataTo = Bundle()
-                        dataTo.putString("when", selectedDate)
-                        dataTo.putString("toCalender", selectedDate)
-                        parentFragmentManager.setFragmentResult("input", dataTo)
+                    selectedDate = date.toString()
 
-                        dismiss()
-                    }
+                    //返したい情報をセット
+                    val dataTo = Bundle()
+                    dataTo.putString("when", selectedDate)
+                    dataTo.putString("toCalender", selectedDate)
+                    parentFragmentManager.setFragmentResult("input", dataTo)
+
+                    dismiss()
 
                 }
 
@@ -195,6 +222,41 @@ class UpdateDialogFragment : DialogFragment() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun showAlertDialog(){
+        val alertDialog = AlertDialog.Builder(requireContext())
+        alertDialog.setTitle("休憩時間を選んでください")
+
+        val application = LestTimeApplication()
+        val list: MutableList<Int> = application.lestTimeDao.getMutableList()
+        val arrayList: ArrayList<Int> = ArrayList(list)
+        val stringArray: ArrayList<String> = arrayList.map { it.toString() }.toTypedArray().toCollection(
+            ArrayList()
+        )
+        stringArray.add(0,"休憩なし")
+
+        val array: Array<CharSequence> = stringArray.toArray(arrayOfNulls(0))
+
+        alertDialog.setSingleChoiceItems(array,0, { _, which ->
+            when (which) {
+                0 ->  editL.setText("0")
+                else ->  editL.setText("${array[which]}")
+            }
+        })
+
+        alertDialog.setPositiveButton(
+            "OK"
+        ) { dialog, which ->
+            dialog.cancel()
+        }
+
+        val alert = alertDialog.create()
+        alert.setCanceledOnTouchOutside(true)
+        alert.show()
+
+    }
+
+
     private fun calcurateJitsudo(shukkinTime:Int,taikinTime:Int):Double {
 
         val startH: Int = (shukkinTime / 100) * 60
@@ -214,8 +276,6 @@ class UpdateDialogFragment : DialogFragment() {
 
     private fun reallyDeleted(dakoku: Dakoku){
         dakokuViewModel.delete(dakoku)
-        //adapter.notifyItemRemoved(position)
-
     }
 
     private fun setupView(view: View) {

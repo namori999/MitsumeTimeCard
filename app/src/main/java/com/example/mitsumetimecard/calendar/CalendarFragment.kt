@@ -20,6 +20,7 @@ import androidx.core.os.HandlerCompat.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.asLiveData
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
@@ -109,10 +110,10 @@ open class CalenderFragment : Fragment() {
             setCurrentDakoku(selectedDate)
         }
 
-        dateTxt = view?.findViewById<TextView>(R.id.dateTxt)
-        shukkinTxt = view?.findViewById<TextView>(R.id.shukkinTxt)
-        taikinTxt = view?.findViewById<TextView>(R.id.taiknTxt)
-        kyukeiTxt = view?.findViewById<TextView>(R.id.kyukeiTxt)
+        dateTxt = view.findViewById(R.id.dateTxt)
+        shukkinTxt = view.findViewById(R.id.shukkinTxt)
+        taikinTxt = view.findViewById(R.id.taiknTxt)
+        kyukeiTxt = view.findViewById(R.id.kyukeiTxt)
 
         //get username
         model = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
@@ -122,11 +123,23 @@ open class CalenderFragment : Fragment() {
             override fun onChanged(o: String?) {
                 val selectedName = o!!.toString()
                 userName = selectedName
+                val dakokuByName = application.repository.getDakokuByName(userName).asLiveData()
+
+                dakokuByName.observe(viewLifecycleOwner, object : Observer,
+                    androidx.lifecycle.Observer<List<Dakoku>> {
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun update(o: Observable?, arg: Any?) {
+                        setCurrentDakoku(selectedDate.toString())
+                    }
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onChanged(t: List<Dakoku>?) {
+                        setCurrentDakoku(selectedDate.toString())
+                    }
+                })
             }
 
             override fun update(o: Observable?, arg: Any?) {
             }
-
         })
 
         //get dakoku today
@@ -229,24 +242,6 @@ open class CalenderFragment : Fragment() {
             }
 
         }
-
-        class MonthViewContainer(view: View) : ViewContainer(view) {
-            val textView = view.findViewById<TextView>(R.id.headerTextView)
-        }
-
-        /*
-        calendarView.monthHeaderBinder = object : MonthHeaderFooterBinder<MonthViewContainer> {
-            override fun create(view: View) = MonthViewContainer(view)
-
-            @SuppressLint("SetTextI18n")
-            override fun bind(container: MonthViewContainer, month: CalendarMonth) {
-                val monthTitleFormatter = DateTimeFormatter.ofPattern("MM")
-                container.textView.text =
-                    "${month.year}" +"-"+ "${monthTitleFormatter.format(month.yearMonth)}"
-
-            }
-         }
-         */
 
         val yearText:TextView = view.findViewById(R.id.yearText)
         val monthText :TextView = view.findViewById(R.id.monthText)

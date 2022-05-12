@@ -11,8 +11,6 @@ import com.example.mitsumetimecard.ui.main.MainFragment
 class ViewPagerFragmentAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {
     // tab titles
-
-
     override fun createFragment(position: Int): Fragment {
         when (position) {
             0 -> return MainFragment()

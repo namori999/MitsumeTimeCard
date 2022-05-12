@@ -41,7 +41,7 @@ data class Dakoku(
             lestFB = lest as Int
         }
 
-        if (jitsudo == null) {
+        if (jitsudo == null || jitsudo!! < 0.0) {
             jitsudoFB = 0.0
         }else {
             jitsudoFB = jitsudo as Double

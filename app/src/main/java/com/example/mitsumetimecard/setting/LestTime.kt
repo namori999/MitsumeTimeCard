@@ -49,7 +49,6 @@ interface LestTimeDao {
     fun getMutableList(): MutableList<Int>
 
 
-
 }
 
 

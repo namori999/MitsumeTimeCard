@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable-v21/ic_logoimage_icon.xml" value="0.192" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_arrow_left_24.xml" value="0.332" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_arrow_right_24.xml" value="0.332" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/drawable/ic_baseline_close_24.xml" value="0.332" />
@@ -29,11 +30,13 @@
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/enprow.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_calender.xml" value="0.25676855895196504" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_emp_set.xml" value="0.22552083333333334" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_lest_time_picker.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/fragment_setting.xml" value="0.27983539094650206" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/kintai_row.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/kintai_table_layout.xml" value="0.33" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/main_activity.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/main_fragment.xml" value="0.3302083333333333" />
+        <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/number_picker_dialog.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/update_dialog.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/layout/userrow.xml" value="0.3625" />
         <entry key="..\:/Development/TimeCard-master/app/src/main/res/menu/activity_main_drawer.xml" value="0.3625" />

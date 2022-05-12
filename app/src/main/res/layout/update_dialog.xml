@@ -117,6 +117,7 @@
                 android:layout_margin="20px"
                 android:gravity="center"
                 android:inputType="time"
+                android:focusable="false"
                 android:textColor="@color/black"
                 android:textSize="30px"
                 android:maxLength="4" />
@@ -146,6 +147,7 @@
                 android:layout_margin="20px"
                 android:gravity="center"
                 android:inputType="time"
+                android:focusable="false"
                 android:textColor="@color/black"
                 android:textSize="30px"
                 android:maxLength="4"
@@ -167,6 +169,7 @@
                 android:layout_margin="20px"
                 android:gravity="center"
                 android:inputType="time"
+                android:focusable="false"
                 android:textColor="@color/black"
                 android:textSize="30px"
                 android:maxLength="3"/>
