@@ -32,14 +32,8 @@ class MainActivity : AppCompatActivity() {
     private var mAdapter: ViewsSliderAdapter? = null
     private lateinit var layouts: IntArray
     lateinit var viewPager :ViewPager2
-
     private lateinit var model: MainViewModel
-
     val application = DakokuApplication()
-    private val viewModel: DakokuViewModel by viewModels {
-        this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }!!
-    }
-
     private lateinit var database: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -114,17 +114,17 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
             holder.let { it.jitudouView.text = "" }
         }
 
-        val zitsudo: Double? = jitsudoTime
-        if (zitsudo == 0.0 && shukkinTime !== 0 && taikinTime !== 0 ) {
+        val jitsudo: Double? = jitsudoTime
+        if (jitsudo == 0.0 && shukkinTime !== 0 && taikinTime !== 0 ) {
             holder.let { it.jitudouView.text = "＊" }
         } else {
-            holder.let{it.jitudouView.text = zitsudo.toString() + " h" }
+            holder.let{it.jitudouView.text = jitsudo.toString() + " h" }
         }
 
-        if (zitsudo == null){
+        if (jitsudo == null){
             jitudoTimes.add((0.0).toInt())
         }else{
-            jitudoTimes.add((zitsudo * 10).toInt())
+            jitudoTimes.add((jitsudo * 10).toInt())
         }
 
         totalTime = (jitudoTimes.sum()) / 10.0

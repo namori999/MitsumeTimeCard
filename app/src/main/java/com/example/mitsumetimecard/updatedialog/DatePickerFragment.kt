@@ -35,4 +35,5 @@ class DatePickerFragment : DialogFragment(), DatePickerDialog.OnDateSetListener 
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
         UpdateDialogFragment.editD.setText(String.format("%d-%02d-%02d", year, month+1, dayOfMonth))
     }
+
 }

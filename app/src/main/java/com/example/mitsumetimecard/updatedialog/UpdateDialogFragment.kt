@@ -17,6 +17,7 @@ import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
 import com.example.mitsumetimecard.setting.LestTimeApplication
+import com.example.mitsumetimecard.ui.main.MainFragment
 import com.google.android.material.snackbar.Snackbar
 import java.util.ArrayList
 
@@ -54,7 +55,6 @@ class UpdateDialogFragment : DialogFragment() {
         lateinit var editS: EditText
         lateinit var editT: EditText
         lateinit var editL :EditText
-
     }
 
     override fun onCreateView(
@@ -70,34 +70,30 @@ class UpdateDialogFragment : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupView(view)
-
         val progress: ProgressBar? = view.findViewById(R.id.progress)
-
         val date = arguments?.getString(KEY_DATE)
 
-        editS = view.findViewById<EditText>(R.id.des_shukkin)
+        editS = view.findViewById(R.id.des_shukkin)
         editS.setOnClickListener{
             TimePickerFragment.myTimePicker.showTimePicker(editS)
         }
 
-        editT = view.findViewById<EditText>(R.id.des_taikin)
+        editT = view.findViewById(R.id.des_taikin)
         editT.setOnClickListener{
             TimePickerFragment.myTimePicker.showTimePicker(editT)
         }
 
-        editD = view.findViewById<EditText>(R.id.des_date)
+        editD = view.findViewById(R.id.des_date)
         editD.setOnClickListener{
             val datePicker = DatePicker(this.requireContext())
             datePicker.calendarViewShown = false
             DatePickerFragment().show(requireFragmentManager(), "datePicker")
         }
 
-        editL = view.findViewById<EditText>(R.id.des_kyukei)
+        editL = view.findViewById(R.id.des_kyukei)
         editL.setOnClickListener{
            showAlertDialog()
         }
-
-
 
         val name = arguments?.getString(KEY_NAME)
         val dakoku = application.repository.getDakokuByDateName(
@@ -112,7 +108,6 @@ class UpdateDialogFragment : DialogFragment() {
                 dismiss()
             }
         }
-
 
         view.findViewById<LinearLayout>(R.id.btnPositive).setOnClickListener {
 
@@ -157,9 +152,7 @@ class UpdateDialogFragment : DialogFragment() {
                     val taikin = editT.toIntOrNull()
                     val kyukei = editL.toIntOrNull()
 
-                    val jitsudo = editS.toIntOrNull()
-                        ?.let { it1 -> editT.toIntOrNull()
-                            ?.let { it2 -> calcurateJitsudo(it1, it2) } }
+                    val jitsudo = MainFragment.calcurateJitsudou(shukkin,taikin)
 
                     val data = Dakoku(
                         id,
@@ -256,24 +249,6 @@ class UpdateDialogFragment : DialogFragment() {
 
     }
 
-
-    private fun calcurateJitsudo(shukkinTime:Int,taikinTime:Int):Double {
-
-        val startH: Int = (shukkinTime / 100) * 60
-        val startS: Int = (shukkinTime % 100)
-        val start: Int = (startH + startS) //minutes
-
-        val endH: Int = (taikinTime / 100) * 60
-        val endS: Int = (taikinTime % 100)
-        val end: Int = (endH + endS) //minutes
-        val sa: Double = (end - start) / 60.0
-
-        val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
-
-        return zitsudo
-
-    }
-
     private fun reallyDeleted(dakoku: Dakoku){
         dakokuViewModel.delete(dakoku)
     }
@@ -315,6 +290,12 @@ class UpdateDialogFragment : DialogFragment() {
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
+        View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+        View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        View.SYSTEM_UI_FLAG_FULLSCREEN
+        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
     }
 
     override fun onResume() {
@@ -332,8 +313,20 @@ class UpdateDialogFragment : DialogFragment() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("updateDialog","onDestroy")
+        hideSystemUI()
+
     }
 
+    private fun hideSystemUI() {
+        activity?.window?.decorView?.apply {
+            systemUiVisibility = ( View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        }
+    }
 }
 
 private operator fun Any.compareTo(i: Int): Int {

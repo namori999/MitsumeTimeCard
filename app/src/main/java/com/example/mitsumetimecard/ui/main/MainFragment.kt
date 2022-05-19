@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
@@ -20,6 +21,7 @@ import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
 import com.example.mitsumetimecard.setting.LestTimeApplication
+import com.example.mitsumetimecard.updatedialog.TimePickerFragment
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ktx.database
@@ -27,9 +29,7 @@ import com.google.firebase.ktx.Firebase
 import java.lang.Math.round
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 
 
@@ -40,6 +40,7 @@ class MainFragment : Fragment() {
     var dakokuViewModel = DakokuViewModel(application.repository)
     private var empname:String = ""
     private var selectedTime:Int =0
+
     private lateinit var database: DatabaseReference
     private lateinit var model: MainViewModel
     private val repository = dakokuViewModel.repository
@@ -48,6 +49,40 @@ class MainFragment : Fragment() {
 
     private lateinit var shukkinBtn: Button
     private lateinit var taikinBtn: Button
+
+    companion object {
+        var pickedTaikin:Int = 0
+
+        fun calcurateJitsudou(shukkinTime:Int?, taikinTime:Int?) :Double{
+            if (shukkinTime == null || shukkinTime == 0){
+                Log.d("calcurate jitsudo","no shukkin record")
+            }else if (taikinTime == null || taikinTime == 0) {
+                Log.d("calcurate jitsudo","no taikin record")
+            }else{
+                val startH = (shukkinTime / 100) * 60
+                val startS: Int = (shukkinTime % 100)
+                val endH: Int = (taikinTime / 100) * 60
+                val endS: Int = (taikinTime % 100)
+
+                if (shukkinTime > taikinTime && taikinTime/100 < 7) {
+                    val end30H = (taikinTime /100 + 24) *60
+                    val start: Int = (startH + startS) //minutes
+                    val end: Int = (end30H + endS) //minutes
+                    val sa: Double = (end - start) / 60.0
+                    val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
+                    return zitsudo
+                }else{
+                    val start: Int = (startH + startS) //minutes
+                    val end: Int = (endH + endS) //minutes
+                    val sa: Double = (end - start) / 60.0
+                    val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
+                    return zitsudo
+                }
+            }
+
+            return 0.0
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -58,7 +93,7 @@ class MainFragment : Fragment() {
 
     @SuppressLint("SetTextI18n", "ResourceAsColor", "UseCompatLoadingForColorStateLists")
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
         //get date and time
@@ -88,16 +123,7 @@ class MainFragment : Fragment() {
                 val selectedName = o!!.toString()
                 empname = selectedName
                 data = repository.getDataRowCount(date,empname)
-
-                //setup button color
-                if (data == 0) {
-                    taikinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context,R.color.colorAccentLight));
-                    Log.d("data check","first dakoku today")
-                }else{
-                    val currentData = repository.getDakokuByDateName(date,empname)
-                    setButtonColor(currentData,shukkinBtn!!,taikinBtn!!,context)
-                }
-
+                initiallizeButton()
             }
             override fun update(o: Observable?, arg: Any?) {
             }
@@ -113,13 +139,12 @@ class MainFragment : Fragment() {
             val marumeTime = getMarumeTime()
 
             if (data == 0) {
-                val newdakoku = Dakoku(0, empname, date, marumeTime, null, 0, 0.0,"")
+                val newdakoku = Dakoku(0, empname, date, marumeTime, 0, 0, 0.0,"")
                 Log.v("TAG", "data to insert(Shukkin) : $newdakoku")
                 dakokuViewModel.insert(newdakoku)
                 Toast.makeText(requireContext(), "出勤しました", Toast.LENGTH_SHORT)
                     .show()
-                setShukkinTimeText(newdakoku,shukkinBtn)
-                setButtonColor(newdakoku,shukkinBtn,taikinBtn!!,context)
+                updateButtonView(newdakoku,shukkinBtn,taikinBtn!!,context)
             } else {
                 Log.v("TAG", "data is already here")
                 AlertDialog.Builder(this.requireActivity()) // FragmentではActivityを取得して生成
@@ -135,32 +160,40 @@ class MainFragment : Fragment() {
             }
         }
 
-
         taikinBtn.setOnClickListener() {
-            Log.d("tag","selectedTime : $selectedTime")
-            data = repository.getDataRowCount(date,empname)
-            val marumeTime = getMarumeTime()
             uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
-            val lastShukkinDate = uncompletedDakokuList.last().date
-            val yesterday = LocalDate.now().minusDays(1).toString()
+            if (uncompletedDakokuList.isNullOrEmpty()) {
+                data = repository.getDataRowCount(date, empname)
+                val marumeTime = getMarumeTime()
 
-            if (data == 0) {
-                val newdakoku = Dakoku(0, empname, date, null, marumeTime.toInt(),  selectedTime, 0.0,"")
-                Log.v("TAG", "data to insert(Taikin) : $newdakoku")
-                dakokuViewModel.insert(newdakoku)
-                setTaikinTimeText(newdakoku,taikinBtn)
-                setButtonColor(newdakoku,shukkinBtn!!,taikinBtn,context)
-                showAlertDialog(date,empname)
-                Toast.makeText(
-                    requireContext(),
-                    "出勤が記録されていません。今月の記録 から追加してください。",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
-            } else if (lastShukkinDate == yesterday){
-                showTaikinAlart(date,empname)
+                if (data == 0) {
+                    val newdakoku =
+                        Dakoku(0, empname, date, 0, marumeTime.toInt(), selectedTime, 0.0, "")
+                    Log.v("TAG", "data to insert(Taikin) : $newdakoku")
+                    dakokuViewModel.insert(newdakoku)
+                    updateButtonView(newdakoku, shukkinBtn!!, taikinBtn, context)
+                    showLestAlartDialog(date, empname)
+
+                    Toast.makeText(requireContext(), "出勤時間を追加してください", Toast.LENGTH_SHORT).show()
+                    UpdateDialogFragment.newInstance(
+                        "${newdakoku.shukkin}",
+                        "${newdakoku?.taikin}",
+                        "${newdakoku?.lest}",
+                        empname,
+                        date
+                    ).show(requireFragmentManager(), UpdateDialogFragment.TAG)
+                }else{
+                    updateDakoku("taikin")
+                }
+
             } else {
-                updateDakoku("taikin")
+                val lastShukkinDate = uncompletedDakokuList.last().date
+                val today = LocalDate.now().toString()
+                if (lastShukkinDate == today){
+                    updateDakoku("taikin")
+                }else{
+                    showTaikinAlartDialog(lastShukkinDate!!, empname)
+                }
             }
         }
     }
@@ -190,144 +223,128 @@ class MainFragment : Fragment() {
 
         when (key){
             "shukkin" -> {
-                dakokuViewModel.updateShukkin(marumeTime,date,empname)
-                jitsudo = calcurateJitsudou(dakoku)
-                dakokuViewModel.updateJitsudo(jitsudo,date,empname)
-                setShukkinTimeText(dakoku,shukkinBtn)
+                dakokuViewModel.updateShukkin(marumeTime, date,empname)
+                jitsudo = calcurateJitsudou(dakoku?.shukkin, dakoku?.taikin)
+                dakokuViewModel.updateJitsudo(jitsudo, date, empname)
+                setShukkinTimeText()
             }
             "taikin" -> {
-                dakokuViewModel.updateTaikin(marumeTime,date,empname)
-                jitsudo = calcurateJitsudou(dakoku)
-                dakokuViewModel.updateJitsudo(jitsudo,date,empname)
-                setTaikinTimeText(dakoku,taikinBtn)
-                setButtonColor(dakoku,shukkinBtn,taikinBtn,this.requireContext())
-                showAlertDialog(date,empname)
+                dakokuViewModel.updateTaikin(marumeTime, date, empname)
+                jitsudo = calcurateJitsudou(dakoku?.shukkin, dakoku?.taikin)
+                dakokuViewModel.updateJitsudo(jitsudo, date, empname)
+                setTaikinTimeText()
+                showLestAlartDialog(date, empname)
             }
             else -> return
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setShukkinTimeText(currentData:Dakoku?, button: Button){
+    private fun initiallizeButton(){
         uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
-        val lastShukkinDate = uncompletedDakokuList.last().date
-        val yesterday = LocalDate.now().minusDays(1).toString()
-        val time = currentData?.shukkin.toString().padStart(4, '0')
-        val dakokuTime = StringBuilder().append(time).insert(2, ":")
+        val today = LocalDate.now()
+        val yesterDay = today.minusDays(1)
+        val context = this.requireContext()
+        val currentData = repository.getDakokuByDateName(today.toString(), empname)
 
-        if (currentData?.shukkin == null){
-            return
-        }else if(lastShukkinDate == yesterday) {
-            button.text ="出勤\n" +"$yesterday\n" + dakokuTime
-            button.textSize = 20F
-        } else {
-            button.text = "出勤\n" + dakokuTime
-            button.textSize = 20F
-        }
-    }
+        if(! uncompletedDakokuList.isNullOrEmpty()) {
+            val dakokuYesterday = uncompletedDakokuList.last()
+            if (dakokuYesterday.date == yesterDay.toString()){
+                updateButtonView(dakokuYesterday, shukkinBtn, taikinBtn, context)
+            }else{
+                updateButtonView(currentData, shukkinBtn, taikinBtn, context)
+            }
 
-
-    private fun setTaikinTimeText(currentData:Dakoku?,button: Button){
-        if (currentData?.taikin == null){
-            return
-        }else{
-            val time = currentData.taikin.toString().padStart(4, '0')
-            val dakokuTime = StringBuilder().append(time).insert(2, ":")
-            button.text = "退勤\n" + dakokuTime
-            button.textSize = 20F
+        } else if (data == 0) {
+            taikinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorAccentLight))
+        }else {
+            updateButtonView(currentData, shukkinBtn, taikinBtn, context)
         }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun setButtonColor(currentData: Dakoku?, shukkinBtn: Button, taikinBtn: Button, context:Context){
-        if (currentData?.shukkin == 0) {
-            taikinBtn.setBackgroundTintList(
-                ContextCompat.getColorStateList(
-                    context, R.color.colorAccentLight
-                )
-            )
+    private fun updateButtonView(currentData: Dakoku?, shukkinBtn: Button, taikinBtn: Button, context:Context){
+        //shukkin
+        if (currentData?.shukkin == 0 || currentData == null) {
+            taikinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorAccentLight))
         }else{
-            shukkinBtn.setBackgroundTintList(
-                ContextCompat.getColorStateList(
-                    context,
-                    R.color.colorAccentLight
-                )
-            )
-            setShukkinTimeText(currentData,shukkinBtn)
+            shukkinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorAccentLight))
+            setShukkinTimeText()
         }
-
-        if (currentData?.taikin == 0) {
-            shukkinBtn.setBackgroundTintList(
-                ContextCompat.getColorStateList(
-                    context,
-                    R.color.colorAccentLight
-                )
-            )
+        //taikin
+        if (currentData?.taikin == 0 || currentData?.taikin == null) {
+            taikinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorAccent))
         }else{
-            taikinBtn.setBackgroundTintList(
-                ContextCompat.getColorStateList(
-                    context,
-                    R.color.colorAccentLight
-                )
-            )
-            setTaikinTimeText(currentData,taikinBtn)
+            taikinBtn.setBackgroundTintList(ContextCompat.getColorStateList(context, R.color.colorAccentLight))
+            setTaikinTimeText()
         }
-
     }
 
-    private fun calcurateJitsudou(dakoku: Dakoku?) :Double{
-        val shukkinTime = dakoku?.shukkin
-        val taikinTime = dakoku?.taikin
+    @SuppressLint("SetTextI18n")
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun setShukkinTimeText(){
+        val today = LocalDate.now().toString()
+        uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
 
-        if (shukkinTime == null){
-            Log.d("calcurate jitsudo","no shukkin record")
-        }else if (taikinTime == null) {
-            Log.d("calcurate jitsudo","no taikin record")
-        } else {
-            val startH: Int = (shukkinTime / 100) * 60
-            val startS: Int = (shukkinTime % 100)
-            val start: Int = (startH + startS) //minutes
-            val endH: Int = (taikinTime / 100) * 60
-            val endS: Int = (taikinTime % 100)
-            val end: Int = (endH + endS) //minutes
-            val sa: Double = (end - start) / 60.0
-            val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
-            return zitsudo
+        if(! uncompletedDakokuList.isNullOrEmpty()) {
+            val lastShukkin = uncompletedDakokuList.last()
+            val time = lastShukkin.shukkin.toString().padStart(4, '0')
+            val lastShukkinTime = StringBuilder().append(time).insert(2, ":")
+            val lastShukkinDate = lastShukkin.date
+
+            if (lastShukkinDate == today){
+                shukkinBtn.text = "出勤\n" + "${lastShukkinTime}"
+                shukkinBtn . textSize = 20F
+            }else{
+                shukkinBtn.text = "出勤\n" + "${lastShukkin.date}\n" + "${lastShukkinTime}"
+                shukkinBtn . textSize = 20F
+            }
         }
-        return 0.0
+
+        val dakokuToday = repository.getDakokuByDateName(today,empname)
+        val shukkinToday = StringBuilder().append(dakokuToday?.shukkin).insert(2, ":")
+        if (dakokuToday !== null){
+            shukkinBtn.text = "出勤\n" + "${shukkinToday}"
+            shukkinBtn . textSize = 20F
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @SuppressLint("SetTextI18n")
+    private fun setTaikinTimeText(){
+        val today = LocalDate.now().toString()
+        val currentData = repository.getDakokuByDateName(today,empname)
+        val time = currentData?.taikin.toString().padStart(4, '0')
+        val dakokuTime = StringBuilder().append(time).insert(2, ":")
+        taikinBtn.text = "退勤\n" + dakokuTime
+        taikinBtn.textSize = 20F
     }
 
     @SuppressLint("UseCompatLoadingForColorStateLists")
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun showTaikinAlart(date:String, empname:String){
-        val yesterday = LocalDate.now().minusDays(1).toString()
-        val dakoku:Dakoku? = repository.getDakokuByDateName(yesterday,empname)
-
+    private fun showTaikinAlartDialog(lastShukkinDate:String, empname:String){
+        val dakoku:Dakoku? = repository.getDakokuByDateName(lastShukkinDate,empname)
         val alertDialog = AlertDialog.Builder(requireContext())
-        alertDialog.setTitle("$yesterday の退勤がまだです")
-            .setMessage("日付をまたいで退勤しますか？")
+        alertDialog.setTitle("$lastShukkinDate の退勤を記録します").setMessage("現在時刻で退勤しますか？")
 
         alertDialog.setPositiveButton(
-            "退勤"
+            "現在時刻で退勤"
         ){ dialog, which ->
-            dakokuViewModel.updateTaikin(2600,yesterday,empname)
-            val jitsudo = calcurateJitsudou(dakoku)
-            dakokuViewModel.updateJitsudo(jitsudo,yesterday,empname)
-            setTaikinTimeText(dakoku,taikinBtn)
-            setButtonColor(dakoku,shukkinBtn,taikinBtn,this.requireContext())
-            showAlertDialog(yesterday,empname)
+            dakokuViewModel.updateTaikin(getMarumeTime(),lastShukkinDate,empname)
+            val jitsudo = calcurateJitsudou(dakoku?.shukkin , getMarumeTime())
+            dakokuViewModel.updateJitsudo(jitsudo,lastShukkinDate,empname)
+            updateButtonView(dakoku,shukkinBtn,taikinBtn,this.requireContext())
+            showLestAlartDialog(lastShukkinDate,empname)
         }
         alertDialog.setNegativeButton(
-            "キャンセル"
+            "時間を入力する"
         ) { dialog, which ->
-            Toast.makeText(requireContext(), "退勤時間を追加してください", Toast.LENGTH_SHORT)
-                .show()
-
+            Toast.makeText(requireContext(), "$lastShukkinDate　の退勤時間を追加してください", Toast.LENGTH_SHORT).show()
             UpdateDialogFragment.newInstance(
-                "${dakoku?.shukkin}", "${dakoku?.taikin}", "${dakoku?.lest}", empname, yesterday
+                "${dakoku?.shukkin}", "${dakoku?.taikin}", "${dakoku?.lest}", empname, lastShukkinDate
             ).show(requireFragmentManager(), UpdateDialogFragment.TAG)
-
         }
+            //.setIcon(ContextCompat.getDrawable(this.requireContext(),R.drawable.ic_baseline_edit_24))
 
         val alert = alertDialog.create()
         alert.setCanceledOnTouchOutside(true)
@@ -336,7 +353,7 @@ class MainFragment : Fragment() {
 
     @SuppressLint("UseCompatLoadingForColorStateLists")
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun showAlertDialog(date:String, empname:String){
+    private fun showLestAlartDialog(date:String, empname:String){
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setTitle("休憩時間を選んでください")
 
@@ -369,5 +386,32 @@ class MainFragment : Fragment() {
         val alert = alertDialog.create()
         alert.setCanceledOnTouchOutside(true)
         alert.show()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun completeDakoku(){
+        uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
+        val yesterDay = LocalDate.now().minusDays(1).toString()
+        val today = LocalDate.now().toString()
+
+        if(! uncompletedDakokuList.isNullOrEmpty()) {
+            val lastShukkinDakoku = uncompletedDakokuList.last()
+
+            if (lastShukkinDakoku.date != yesterDay && lastShukkinDakoku.date != today) {
+                TimePickerFragment.myTimePicker.showTaikinTimePicker(this.requireContext(),lastShukkinDakoku.date!!)
+                dakokuViewModel.updateTaikin(pickedTaikin, lastShukkinDakoku.date!!, empname)
+                val jitsudo = calcurateJitsudou(lastShukkinDakoku.shukkin, pickedTaikin)
+                dakokuViewModel.updateJitsudo(jitsudo, lastShukkinDakoku.date!!, empname)
+                Toast.makeText(requireContext(), "退勤を記録" +
+                        "しました", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onStart() {
+        super.onStart()
+        completeDakoku()
     }
 }
