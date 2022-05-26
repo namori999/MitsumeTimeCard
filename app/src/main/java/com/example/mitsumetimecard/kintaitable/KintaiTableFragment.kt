@@ -29,6 +29,7 @@ import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
+import com.example.mitsumetimecard.ui.main.MainFragment
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import java.text.DateFormat
@@ -206,8 +207,9 @@ class KintaiTableFragment() : Fragment(){
     private fun showJitsudoAlart(){
         val filterdList = getFilterdList(selectedMonth)
         for(i in filterdList.iterator()){
-            if (i.shukkin !=0 && i.taikin != 0 && i.jitsudo == 0.0){
-                Toast.makeText(this.requireContext(), "＊実働時間がマイナスになる日があります。" +
+            val jitsudo = MainFragment.calcurateJitsudou(i.shukkin,i.taikin)
+            if (jitsudo == 0.0 && (i.shukkin != 0 || i.taikin != 0)){
+                Toast.makeText(this.requireContext(), "＊実働時間がマイナス または 0時間になる日があります。" +
                         "出退勤時間を確認してください。", Toast.LENGTH_LONG)
                     .show()
             }

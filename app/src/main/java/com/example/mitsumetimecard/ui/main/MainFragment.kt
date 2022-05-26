@@ -9,12 +9,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.*
+import android.widget.Button
+import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.asLiveData
+import com.example.mitsumetimecard.MainActivity
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
@@ -50,9 +53,11 @@ class MainFragment : Fragment() {
     private lateinit var shukkinBtn: Button
     private lateinit var taikinBtn: Button
 
-    companion object {
-        var pickedTaikin:Int = 0
+    var myAlertDialog: AlertDialog? = null
 
+    companion object {
+
+        var pickedTaikin:Int = 0
         fun calcurateJitsudou(shukkinTime:Int?, taikinTime:Int?) :Double{
             if (shukkinTime == null || shukkinTime == 0){
                 Log.d("calcurate jitsudo","no shukkin record")
@@ -124,6 +129,21 @@ class MainFragment : Fragment() {
                 empname = selectedName
                 data = repository.getDataRowCount(date,empname)
                 initiallizeButton()
+
+                val dakokuByName = application.repository.getDakokuByName(empname).asLiveData()
+
+                dakokuByName.observe(viewLifecycleOwner, object : Observer,
+                    androidx.lifecycle.Observer<List<Dakoku>> {
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun update(o: Observable?, arg: Any?) {
+                        initiallizeButton()
+                    }
+
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onChanged(t: List<Dakoku>?) {
+                        initiallizeButton()
+                    }
+                })
             }
             override fun update(o: Observable?, arg: Any?) {
             }
@@ -134,6 +154,12 @@ class MainFragment : Fragment() {
         database = Firebase.database.reference
 
         //onClick
+        view.setOnClickListener(){
+            MainActivity().removeTimer()
+            MainActivity().setViewTimer()
+            Log.d("MainFragment","view clicked")
+        }
+
         shukkinBtn.setOnClickListener() {
             data = repository.getDataRowCount(date,empname)
             val marumeTime = getMarumeTime()
@@ -142,6 +168,7 @@ class MainFragment : Fragment() {
                 val newdakoku = Dakoku(0, empname, date, marumeTime, 0, 0, 0.0,"")
                 Log.v("TAG", "data to insert(Shukkin) : $newdakoku")
                 dakokuViewModel.insert(newdakoku)
+                dakokuViewModel.insertOriginalShukkin(marumeTime, date, empname)
                 Toast.makeText(requireContext(), "出勤しました", Toast.LENGTH_SHORT)
                     .show()
                 updateButtonView(newdakoku,shukkinBtn,taikinBtn!!,context)
@@ -154,6 +181,7 @@ class MainFragment : Fragment() {
                         updateDakoku("shukkin")
                     })
                     .setNegativeButton("キャンセル", { dialog, which ->
+                        MainActivity().setViewTimer()
                         Log.v("TAG", "shukkin update is canseled")
                     })
                     .show()
@@ -161,6 +189,8 @@ class MainFragment : Fragment() {
         }
 
         taikinBtn.setOnClickListener() {
+            MainActivity().removeTimer()
+
             uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
             if (uncompletedDakokuList.isNullOrEmpty()) {
                 data = repository.getDataRowCount(date, empname)
@@ -171,6 +201,7 @@ class MainFragment : Fragment() {
                         Dakoku(0, empname, date, 0, marumeTime.toInt(), selectedTime, 0.0, "")
                     Log.v("TAG", "data to insert(Taikin) : $newdakoku")
                     dakokuViewModel.insert(newdakoku)
+                    dakokuViewModel.insertOriginalTaikin(marumeTime,date,empname)
                     updateButtonView(newdakoku, shukkinBtn!!, taikinBtn, context)
                     showLestAlartDialog(date, empname)
 
@@ -197,6 +228,7 @@ class MainFragment : Fragment() {
             }
         }
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getMarumeTime():Int{
@@ -230,10 +262,15 @@ class MainFragment : Fragment() {
             }
             "taikin" -> {
                 dakokuViewModel.updateTaikin(marumeTime, date, empname)
-                jitsudo = calcurateJitsudou(dakoku?.shukkin, dakoku?.taikin)
+                jitsudo = calcurateJitsudou(dakoku?.shukkin, marumeTime)
                 dakokuViewModel.updateJitsudo(jitsudo, date, empname)
                 setTaikinTimeText()
                 showLestAlartDialog(date, empname)
+
+                if (dakoku?.taikin == null || dakoku.taikin == 0) {
+                    //退勤がはじめて
+                    dakokuViewModel.insertOriginalTaikin(marumeTime,date,empname)
+                }
             }
             else -> return
         }
@@ -288,7 +325,11 @@ class MainFragment : Fragment() {
 
         if(! uncompletedDakokuList.isNullOrEmpty()) {
             val lastShukkin = uncompletedDakokuList.last()
-            val time = lastShukkin.shukkin.toString().padStart(4, '0')
+            var time = lastShukkin.shukkin.toString()
+            if (time.length == 3) {
+                time = "0$time"
+            }
+            time = time.padStart(4, '0')
             val lastShukkinTime = StringBuilder().append(time).insert(2, ":")
             val lastShukkinDate = lastShukkin.date
 
@@ -302,7 +343,11 @@ class MainFragment : Fragment() {
         }
 
         val dakokuToday = repository.getDakokuByDateName(today,empname)
-        val shukkinToday = StringBuilder().append(dakokuToday?.shukkin).insert(2, ":")
+        var time = dakokuToday?.shukkin.toString()
+            if (time.length == 3){
+                time = "0$time"
+            }
+        val shukkinToday = StringBuilder().append(time).insert(2, ":")
         if (dakokuToday !== null){
             shukkinBtn.text = "出勤\n" + "${shukkinToday}"
             shukkinBtn . textSize = 20F
@@ -331,6 +376,7 @@ class MainFragment : Fragment() {
             "現在時刻で退勤"
         ){ dialog, which ->
             dakokuViewModel.updateTaikin(getMarumeTime(),lastShukkinDate,empname)
+            dakokuViewModel.insertOriginalTaikin(getMarumeTime(),lastShukkinDate,empname)
             val jitsudo = calcurateJitsudou(dakoku?.shukkin , getMarumeTime())
             dakokuViewModel.updateJitsudo(jitsudo,lastShukkinDate,empname)
             updateButtonView(dakoku,shukkinBtn,taikinBtn,this.requireContext())
@@ -381,6 +427,8 @@ class MainFragment : Fragment() {
             taikinBtn?.setBackgroundTintList(
                 this.resources.getColorStateList(R.color.colorAccentLight)
             );
+            hideSystemUI()
+            MainActivity().setViewTimer()
         }
 
         val alert = alertDialog.create()
@@ -402,9 +450,7 @@ class MainFragment : Fragment() {
                 dakokuViewModel.updateTaikin(pickedTaikin, lastShukkinDakoku.date!!, empname)
                 val jitsudo = calcurateJitsudou(lastShukkinDakoku.shukkin, pickedTaikin)
                 dakokuViewModel.updateJitsudo(jitsudo, lastShukkinDakoku.date!!, empname)
-                Toast.makeText(requireContext(), "退勤を記録" +
-                        "しました", Toast.LENGTH_SHORT)
-                    .show()
+                hideSystemUI()
             }
         }
     }
@@ -413,5 +459,28 @@ class MainFragment : Fragment() {
     override fun onStart() {
         super.onStart()
         completeDakoku()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onPause() {
+        super.onPause()
+        Log.d("mainfragment","onPause")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideSystemUI()
+        Log.d("mainfragment","onResume")
+    }
+
+    private fun hideSystemUI() {
+        activity?.window?.decorView?.apply {
+            systemUiVisibility = ( View.SYSTEM_UI_FLAG_LOW_PROFILE
+                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    or View.SYSTEM_UI_FLAG_FULLSCREEN
+                    or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        }
     }
 }

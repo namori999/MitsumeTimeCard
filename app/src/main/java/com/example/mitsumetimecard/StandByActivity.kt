@@ -123,36 +123,34 @@ class StandByActivity : AppCompatActivity() {
 
                 for (h in dataSnapshot.children) {
 
-                    if (h.child("state").getValue() == "deleted") {
-                        Log.v("deleted data", "${h.child("name")},${h.key}")
-                    } else {
+                    if (h.child("state").getValue() != "deleted") {
 
                         val date: String = h.key.toString().substring(0, 10)
                         val name: String = h.child("name").getValue().toString()
 
                         var shukkin: Int = 0
-                        if (h.child("shukkin").getValue().toString() == null) {
+                        if (h.child("shukkin").getValue() == null) {
                             shukkin = 0
                         } else {
                             shukkin = h.child("shukkin").getValue().toString().toInt()
                         }
 
                         var taikin: Int = 0
-                        if (h.child("taikin").getValue().toString() == null) {
+                        if (h.child("taikin").getValue() == null) {
                             taikin = 0
                         } else {
                             taikin = h.child("taikin").getValue().toString().toInt()
                         }
 
                         var lest: Int = 0
-                        if (h.child("lest").getValue().toString() == null) {
+                        if (h.child("lest").getValue() == null) {
                             lest = 0
                         } else {
                             lest = h.child("lest").getValue().toString().toInt()
                         }
 
                         var jitsudo: Double = 0.0
-                        if (h.child("jitsudo").getValue().toString() == null) {
+                        if (h.child("jitsudo").getValue() == null) {
                             jitsudo = 0.0
                         } else {
                             jitsudo = h.child("jitsudo").getValue().toString().toDouble()
@@ -170,7 +168,6 @@ class StandByActivity : AppCompatActivity() {
                             jitsudo,
                             state
                         )
-
 
                         dakokuList.add(dakoku)
                         model.insertFromFB(dakoku)

@@ -21,6 +21,14 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
         database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakoku.makeString())
     }
 
+    fun insertOriginalShukkin(shukkin: Int, date: String, name: String) = viewModelScope.launch{
+        database.child("DakokuSheet").child("/${date}-${name}-original").setValue(Original(shukkin,0,"original"))
+    }
+
+    fun insertOriginalTaikin(taikin: Int, date: String, name: String) = viewModelScope.launch{
+        database.child("DakokuSheet").child("/${date}-${name}-original").child("taikin").setValue(taikin)
+    }
+
     fun insertOrUpdate(dakoku: Dakoku) = viewModelScope.launch {
         repository.insertOrUpdate(dakoku)
         database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakoku.makeString())
@@ -35,19 +43,16 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
     fun updateTaikin(taikin:Int,date:String,name:String) = viewModelScope.launch {
         repository.updateTaikin(taikin,date,name)
         database.child("DakokuSheet").child("/${date}-${name}").child("taikin").setValue(taikin)
-
     }
 
     fun updateLest(golest:Int,date:String,name: String) = viewModelScope.launch{
         repository.updateLest(golest,date,name)
         database.child("DakokuSheet").child("/${date}-${name}").child("lest").setValue(golest)
-
     }
 
     fun updateJitsudo(jitsudo:Double,date:String,name:String) = viewModelScope.launch {
         repository.updateJitsudo(jitsudo,date,name)
         database.child("DakokuSheet").child("/${date}-${name}").child("jitsudo").setValue(jitsudo)
-
     }
 
 

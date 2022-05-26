@@ -1,6 +1,7 @@
 package com.example.mitsumetimecard
 
-
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,16 +9,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.viewModels
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
-import com.example.mitsumetimecard.dakoku.DakokuViewModel
+import com.example.mitsumetimecard.ui.main.MainFragment
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -31,10 +32,43 @@ class MainActivity : AppCompatActivity() {
 
     private var mAdapter: ViewsSliderAdapter? = null
     private lateinit var layouts: IntArray
-    lateinit var viewPager :ViewPager2
+    lateinit var viewPager: ViewPager2
     private lateinit var model: MainViewModel
     val application = DakokuApplication()
     private lateinit var database: DatabaseReference
+
+    var timeoutInMs: Long = 10000
+    private var timer:Timer?= null
+    private lateinit var timerTask: TimerTask
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun setViewTimer() {
+        if (timer ==null) timer = Timer()
+
+        timerTask = object : TimerTask() {
+            override fun run() {
+                try{
+                    this.cancel()
+                    startActivity(Intent(this@MainActivity,StandByActivity::class.java))
+                    this@MainActivity.finish()
+                }catch (e: Exception){
+                    Log.e("MainActivity companion","error")
+                }
+            }
+        }
+        timer!!.schedule(timerTask, timeoutInMs, timeoutInMs)
+        Log.d("timer", "set")
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    fun removeTimer() {
+        if (timer != null) {
+            timer?.cancel()
+            timer?.purge()
+        }
+        timer = null
+        Log.d("timer","removed")
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,27 +83,28 @@ class MainActivity : AppCompatActivity() {
         model = ViewModelProviders.of(this@MainActivity).get(MainViewModel::class.java)
         val userNameTxt = findViewById<TextView>(R.id.dakokushaTxt)
 
-        model.mutableLiveData.observe(this,object : Observer,
+        model.mutableLiveData.observe(this, object : Observer,
             androidx.lifecycle.Observer<String> {
 
             override fun onChanged(o: String?) {
                 val selectedName = o!!.toString()
                 userNameTxt?.setText("$selectedName" + "さん")
             }
+
             override fun update(o: Observable?, arg: Any?) {
             }
         })
 
         //back button
         val backBtn: ImageView? = findViewById(R.id.back)
-        backBtn?.setOnClickListener (){
-            Log.v("onclick","back button tapped")
-            startActivity(Intent(this@MainActivity, StandByActivity ::class.java))
+        backBtn?.setOnClickListener() {
+            Log.v("onclick", "back button tapped")
+            startActivity(Intent(this@MainActivity,StandByActivity::class.java))
             this@MainActivity.finish()
         }
 
         //set username
-        val name :String = intent.getStringExtra("EMP_NAME").toString()
+        val name: String = intent.getStringExtra("EMP_NAME").toString()
         val b = Bundle()
         b.putString("COMMON_NAME_KEY", name)
         model!!.setCurrentName(name)
@@ -81,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            val titles = arrayOf("打刻モード", "カレンダー","月別の記録")
+            val titles = arrayOf("打刻モード", "カレンダー", "月別の記録")
             val currentPage = titles.get(position)
             tab.text = "${currentPage}"
         }.attach()
@@ -90,30 +125,35 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onPause() {
-        super.onPause()
-        Log.d("mainActivity","Paused")
-    }
 
-    override fun onResume(){
+    override fun onResume() {
         super.onResume()
+        //setViewTimer()
         hideSystemUI()
     }
 
-
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("mainActivity","Destoroyed")
+        Log.d("mainActivity", "onDestoroy")
     }
 
     override fun onRestart() {
         super.onRestart()
+        Log.d("mainActivity", "onRestart")
+    }
 
-        Log.d("mainActivity","onRestart")
+    override fun onStart() {
+        super.onStart()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        removeTimer()
+        Log.d("MainActivity","onPause")
     }
 
 
-private fun init() {
+    private fun init() {
         layouts = intArrayOf(
             R.layout.main_fragment,
             R.layout.fragment_calender,
@@ -134,12 +174,12 @@ private fun init() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
 
-            // changing the next button text 'NEXT' / 'GOT IT'
-            if (position == layouts.size - 1) {
-                // last page. make button text to GOT IT
-
+            if (position == 0) {
+                Log.d("MainAcivity", "pagePosition = 1")
+                setViewTimer()
             } else {
-                // still pages are left
+                Log.d("MainAcivity", "pagePosition = else")
+                removeTimer()
             }
         }
     }

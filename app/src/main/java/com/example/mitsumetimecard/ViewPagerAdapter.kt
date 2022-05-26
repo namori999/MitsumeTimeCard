@@ -16,7 +16,6 @@ class ViewPagerFragmentAdapter(fragmentActivity: FragmentActivity) :
             0 -> return MainFragment()
             1 -> return CalenderFragment()
             2 -> return KintaiTableFragment()
-
         }
         return MainFragment()
     }

@@ -79,8 +79,14 @@ class TimePickerFragment : DialogFragment() {
                     val time = String.format("%02d%02d", getHour, getMinutes)
                     if (time.substring(0,2) =="00"){
                         MainFragment.pickedTaikin = String.format("%02d%02d", 24, getMinutes).toIntOrNull()!!
+                        Toast.makeText(
+                            context, "退勤を記録しました", Toast.LENGTH_LONG
+                        ).show()
                     } else {
                         MainFragment.pickedTaikin = time.toIntOrNull()!!
+                        Toast.makeText(
+                            context, "退勤を記録しました", Toast.LENGTH_LONG
+                        ).show()
                     }
                 },
                 // TimePickerが初期表示する時刻

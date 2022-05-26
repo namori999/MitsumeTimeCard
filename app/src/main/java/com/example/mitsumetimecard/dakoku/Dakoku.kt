@@ -67,3 +67,9 @@ data class Contents(
     @ColumnInfo(name = "jitsudoTime") var jitsudo:Double,
     @ColumnInfo(name = "state") var state:String,
 )
+
+data class Original(
+    @ColumnInfo(name = "shukkinTime") var shukkin: Int,
+    @ColumnInfo(name = "taikinTime") var taikin:Int,
+    @ColumnInfo(name = "state") var state: String,
+)
