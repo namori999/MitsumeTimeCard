@@ -142,11 +142,11 @@ class StandByActivity : AppCompatActivity() {
                             taikin = h.child("taikin").getValue().toString().toInt()
                         }
 
-                        var lest: Int = 0
-                        if (h.child("lest").getValue() == null) {
-                            lest = 0
+                        var rest: Int = 0
+                        if (h.child("rest").getValue() == null) {
+                            rest = 0
                         } else {
-                            lest = h.child("lest").getValue().toString().toInt()
+                            rest = h.child("rest").getValue().toString().toInt()
                         }
 
                         var jitsudo: Double = 0.0
@@ -164,7 +164,7 @@ class StandByActivity : AppCompatActivity() {
                             date,
                             shukkin,
                             taikin,
-                            lest,
+                            rest,
                             jitsudo,
                             state
                         )

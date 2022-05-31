@@ -74,7 +74,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
         val current = myDataSet?.get(position)
         val shukkinTime = current?.shukkin
         val taikinTime = current?.taikin
-        val lestTime = current?.lest
+        val lestTime = current?.rest
         val jitsudoTime = current?.jitsudo
 
         holder.let {
@@ -94,7 +94,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
             if (lestTime == 0){
                 it.restView.text = ""
             }else{
-                it.restView.text = current?.lest.toString() + "分"
+                it.restView.text = current?.rest.toString() + "分"
             }
         }
 

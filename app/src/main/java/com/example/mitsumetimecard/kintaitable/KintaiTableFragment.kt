@@ -192,7 +192,7 @@ class KintaiTableFragment() : Fragment(){
                 Log.v("dakoku at position", "${dakoku}")
                 val shukkinTime = dakoku?.shukkin.toString()
                 val taikinTime = dakoku?.taikin.toString()
-                val lestTime = dakoku?.lest.toString()
+                val lestTime = dakoku?.rest.toString()
                 val name = dakoku?.name
                 val date = dakoku?.date
 

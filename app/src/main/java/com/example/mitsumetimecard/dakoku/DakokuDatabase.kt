@@ -11,7 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
-@Database(entities = arrayOf(Dakoku::class), version = 6 ,  exportSchema = false)
+@Database(entities = arrayOf(Dakoku::class), version = 6, exportSchema = false)
 abstract class DakokuDatabase : RoomDatabase() {
 
     abstract fun dakokuDao(): DakokuDao

@@ -155,7 +155,7 @@ open class CalenderFragment : Fragment() {
         goEdit.setOnClickListener() {
             val shukkinTime = data?.shukkin
             val taikinTime = data?.taikin
-            val lestTime = data?.lest
+            val lestTime = data?.rest
             val name = userName
             val date = selectedDate
 
@@ -319,7 +319,7 @@ open class CalenderFragment : Fragment() {
                 taikinTxt?.setText("退勤 :　" + "$taikintime")
             }
 
-            val kyukei = data?.lest
+            val kyukei = data?.rest
             if (kyukei == 0) {
                 kyukeiTxt?.setText("休憩 :　")
             } else {

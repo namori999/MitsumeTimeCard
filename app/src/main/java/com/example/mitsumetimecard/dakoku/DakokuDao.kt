@@ -26,7 +26,7 @@ interface DakokuDao {
                     table.date,
                     table.shukkin,
                     table.taikin,
-                    table.lest,
+                    table.rest,
                     table.jitsudo,
                     table.state,
                     table.id
@@ -36,7 +36,7 @@ interface DakokuDao {
                     table.date,
                     table.shukkin,
                     table.taikin,
-                    table.lest,
+                    table.rest,
                     0.0,
                     table.state,
                     table.id

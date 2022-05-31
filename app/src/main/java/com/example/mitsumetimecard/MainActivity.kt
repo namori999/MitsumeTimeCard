@@ -37,6 +37,8 @@ class MainActivity : AppCompatActivity() {
     val application = DakokuApplication()
     private lateinit var database: DatabaseReference
 
+    private val tabTitleArray :Array<String> = arrayOf("打刻", "カレンダー", "月別の記録")
+
     var timeoutInMs: Long = 10000
     private var timer:Timer?= null
     private lateinit var timerTask: TimerTask
@@ -116,7 +118,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
 
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            val titles = arrayOf("打刻モード", "カレンダー", "月別の記録")
+            val titles = tabTitleArray
             val currentPage = titles.get(position)
             tab.text = "${currentPage}"
         }.attach()

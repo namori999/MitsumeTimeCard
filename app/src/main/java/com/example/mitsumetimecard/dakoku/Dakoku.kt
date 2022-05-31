@@ -12,7 +12,7 @@ data class Dakoku(
     @ColumnInfo(name = "date") var date:String?,
     @ColumnInfo(name = "shukkinTime") var shukkin: Int?,
     @ColumnInfo(name = "taikinTime") var taikin:Int?,
-    @ColumnInfo(name = "lestTime") var lest: Int,
+    @ColumnInfo(name = "lestTime") var rest: Int,
     @ColumnInfo(name = "jitsudoTime") var jitsudo:Double?,
     @ColumnInfo(name = "state") var state:String?,
 
@@ -35,10 +35,10 @@ data class Dakoku(
             taikinFB = taikin as Int
         }
 
-        if (lest == null) {
+        if (rest == null) {
             lestFB = 0
         }else {
-            lestFB = lest as Int
+            lestFB = rest as Int
         }
 
         if (jitsudo == null || jitsudo!! < 0.0) {
@@ -63,7 +63,7 @@ data class Contents(
     @ColumnInfo(name = "name") var name:String,
     @ColumnInfo(name = "shukkinTime") var shukkin: Int,
     @ColumnInfo(name = "taikinTime") var taikin:Int,
-    @ColumnInfo(name = "lestTime") var lest: Int,
+    @ColumnInfo(name = "lestTime") var rest: Int,
     @ColumnInfo(name = "jitsudoTime") var jitsudo:Double,
     @ColumnInfo(name = "state") var state:String,
 )

@@ -75,7 +75,7 @@
         android:layout_gravity="center"
         android:layout_margin="20px"
         android:layout_weight="1"
-        android:text="ユーザーをえらぶ"
+        android:text="ユーザーを選んでください"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

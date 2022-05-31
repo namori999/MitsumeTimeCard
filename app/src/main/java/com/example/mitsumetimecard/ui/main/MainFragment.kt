@@ -209,7 +209,7 @@ class MainFragment : Fragment() {
                     UpdateDialogFragment.newInstance(
                         "${newdakoku.shukkin}",
                         "${newdakoku?.taikin}",
-                        "${newdakoku?.lest}",
+                        "${newdakoku?.rest}",
                         empname,
                         date
                     ).show(requireFragmentManager(), UpdateDialogFragment.TAG)
@@ -387,7 +387,7 @@ class MainFragment : Fragment() {
         ) { dialog, which ->
             Toast.makeText(requireContext(), "$lastShukkinDate　の退勤時間を追加してください", Toast.LENGTH_SHORT).show()
             UpdateDialogFragment.newInstance(
-                "${dakoku?.shukkin}", "${dakoku?.taikin}", "${dakoku?.lest}", empname, lastShukkinDate
+                "${dakoku?.shukkin}", "${dakoku?.taikin}", "${dakoku?.rest}", empname, lastShukkinDate
             ).show(requireFragmentManager(), UpdateDialogFragment.TAG)
         }
             //.setIcon(ContextCompat.getDrawable(this.requireContext(),R.drawable.ic_baseline_edit_24))
