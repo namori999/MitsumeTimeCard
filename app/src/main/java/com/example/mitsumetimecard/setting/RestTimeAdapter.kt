@@ -2,27 +2,20 @@ package com.example.mitsumetimecard.setting
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.view.menu.MenuView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.room.Room
 import com.example.mitsumetimecard.R
-import com.example.mitsumetimecard.StandByActivity
-import com.example.mitsumetimecard.dakoku.Dakoku
-import java.util.Collections.list
 
 
-class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  RecyclerView.Adapter<LestTimeAdapter.RecyclerViewHolder>() {
+class RestTimeAdapter(val context: Context, var list: List<RestTime>) :  RecyclerView.Adapter<RestTimeAdapter.RecyclerViewHolder>() {
 
-    private lateinit var listener: LestTimeAdapter.onItemClickListener
+    private lateinit var listener: RestTimeAdapter.onItemClickListener
 
     //インターフェースの作成
     interface onItemClickListener {
@@ -33,14 +26,12 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
         this.listener = listener
     }
 
-    fun submitList(myDataSet: List<lestTime>?): List<lestTime>? {
-
+    fun submitList(myDataSet: List<RestTime>?): List<RestTime>? {
         if (myDataSet != null) {
             this.list = myDataSet
         }
         notifyDataSetChanged()
         return myDataSet
-
     }
 
     inner class RecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -57,37 +48,37 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): LestTimeAdapter.RecyclerViewHolder {
+    ): RestTimeAdapter.RecyclerViewHolder {
         val layoutInflater = LayoutInflater.from(context)
         val mView = layoutInflater.inflate(R.layout.userrow, parent, false)
         return RecyclerViewHolder(mView)
     }
 
     @SuppressLint("ResourceAsColor")
-    override fun onBindViewHolder(holder: LestTimeAdapter.RecyclerViewHolder, @SuppressLint("RecyclerView") position: Int) {
+    override fun onBindViewHolder(holder: RestTimeAdapter.RecyclerViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val lestTimeList = list[position]
-        holder?.let { it.nameView.text = lestTimeList.lestTime.toString() + "分" }
+        holder.let { it.nameView.text = lestTimeList.restime.toString() + "分" }
 
-        holder.itemView?.setOnClickListener() {
+        holder.itemView.setOnClickListener() {
             listener.onItemClick(position)
         }
 
-        holder.nameLayout?.setOnClickListener() {
+        holder.nameLayout.setOnClickListener() {
 
             //Toast.makeText(context, "${list[position]}}", Toast.LENGTH_LONG).show()
 
             PopupMenu(context, holder.itemView).apply {
                 setOnMenuItemClickListener(object : PopupMenu.OnMenuItemClickListener {
-                    val application = LestTimeApplication()
+                    val application = RestTimeApplication()
 
                     @SuppressLint("ResourceAsColor")
                     override fun onMenuItemClick(item: MenuItem): Boolean {
-                        return when (item?.itemId) {
+                        return when (item.itemId) {
                             R.id.delete -> {
-                                val lestTimeList: List<lestTime> = application.database.lestTimeDao().getList()
-                                application.database.lestTimeDao().delete(lestTimeList[position])
+                                val lestTimeList: List<RestTime> = application.database.RestTimeDao().getList()
+                                application.database.RestTimeDao().delete(lestTimeList[position])
                                 submitList(null)
-                                submitList(application.database.lestTimeDao().getList())
+                                submitList(application.database.RestTimeDao().getList())
                                 notifyDataSetChanged()
 
                                 true
@@ -104,10 +95,6 @@ class LestTimeAdapter(val context: Context, var list: List<lestTime>) :  Recycle
             }
         }
 
-    }
-
-    fun getItem(position: Int):lestTime {
-        return list[position]
     }
 
     override fun getItemCount(): Int {

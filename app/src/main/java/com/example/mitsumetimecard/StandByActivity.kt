@@ -42,52 +42,39 @@ class StandByActivity : AppCompatActivity() {
 
      val application = DakokuApplication()
      private val model: DakokuViewModel by viewModels {
-        this?.application?.let { DakokuViewModel.ModelViewModelFactory(application.repository) }
+         this.application.let { DakokuViewModel.ModelViewModelFactory(application.repository) }
      }
+     
+     private lateinit var dateTimeTextView: TextView
 
     @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("ClickableViewAccessibility", "ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         DakokuApplication.setContext(this)
-        LestTimeApplication.setContext(this)
+        RestTimeApplication.setContext(this)
         setContentView(R.layout.activity_stand_by)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         hideSystemUI()
 
-
-        //set date
-        val date1: LocalDateTime = LocalDateTime.now()
-        val dtformat2: DateTimeFormatter =
-            DateTimeFormatter.ofPattern("yyyy-MM-dd E")
-        val fdate2: String = dtformat2.format(date1)
-        Log.v("today :","$fdate2")
-
-        findViewById<TextView>(R.id.standByDate).setText("$fdate2")
-
+        dateTimeTextView = findViewById(R.id.standByDate)
+        setDateTime()
 
         //firebase
         database = Firebase.database.reference
         val rootRef: DatabaseReference = database.child("EmpNameSpreadSheet")
 
         val progress= findViewById<ProgressBar>(R.id.progress)
-
-        //lestTimeDatabase
-        val application = LestTimeApplication()
-        application.database.lestTimeDao().getList()
-        Log.d("lestTimeArray","${application.database.lestTimeDao().getList()}")
-
+        
         //creatuser list
         var valueList = arrayListOf<User>()
-
         rootRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 progress.visibility = VISIBLE
                 valueList.clear()
 
                 for (h in dataSnapshot.children) {
-
                     if (h.child("Hide").getValue(Boolean::class.java) == true) {
                         Log.v("datasnapshot","this is hidden data")
                     }
@@ -101,10 +88,9 @@ class StandByActivity : AppCompatActivity() {
                     }
                 }
 
-                val list = valueList
-                startSelectNameMode(list)
+                val userArrayList = valueList
+                setUpUserList(userArrayList)
                 progress.visibility = GONE
-
             }
                 override fun onCancelled(databaseError: DatabaseError) {
                     // Getting Post failed, log a message
@@ -195,27 +181,35 @@ class StandByActivity : AppCompatActivity() {
     }
 
 
-    fun startSelectNameMode(list:MutableList<User>){
+     @RequiresApi(Build.VERSION_CODES.O)
+     fun setDateTime(){
+         val date1: LocalDateTime = LocalDateTime.now()
+         val dtformat2: DateTimeFormatter =
+             DateTimeFormatter.ofPattern("yyyy-MM-dd E")
+         val fdate2: String = dtformat2.format(date1)
+
+         dateTimeTextView.setText(fdate2)
+     }
+
+
+     fun setUpUserList(userArrayList:MutableList<User>){
         //prepare employees list
         val recyclerView = findViewById<RecyclerView>(R.id.userList)
         recyclerView?.layoutManager = GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false)
         recyclerView?.setHasFixedSize(false)
 
-        val adapter = UserAdapter(this@StandByActivity, list)
-        adapter?.submitList(list)
+        val adapter = UserAdapter(this@StandByActivity, userArrayList)
+        adapter.submitList(userArrayList)
         recyclerView?.adapter = adapter
 
 
-        adapter?.setOnItemClickListener(object : UserAdapter.onItemClickListener {
+        adapter.setOnItemClickListener(object : UserAdapter.onItemClickListener {
             override fun onItemClick(position: Int) {
                 val empname = adapter.getName(position)
                 Toast.makeText(this@StandByActivity,"${empname}さん お疲れさまです！", Toast.LENGTH_LONG)
                     .show()
-
-                Log.v("name at position","${empname}")
-
+                
                 val intent = Intent(this@StandByActivity, MainActivity ::class.java)
-
                 intent.putExtra("EMP_NAME",empname)
                 startActivity(intent)
                 this@StandByActivity.finish()
@@ -230,7 +224,6 @@ class StandByActivity : AppCompatActivity() {
         PopupMenu(this, v).apply {
             setOnMenuItemClickListener(object: PopupMenu.OnMenuItemClickListener {
                 override fun onMenuItemClick(item: MenuItem?): Boolean {
-
                     return when (item?.itemId) {
                         R.id.SettingFragment -> {
                             val currentFragment = SettingFragment.getInstance();
@@ -261,12 +254,6 @@ class StandByActivity : AppCompatActivity() {
              hideSystemUI()
          }
      }
-
-    override fun onStop(){
-        super.onStop()
-        hideSystemUI()
-        Log.d("stand by activity","stopped")
-    }
 
     override fun onResume(){
         super.onResume()

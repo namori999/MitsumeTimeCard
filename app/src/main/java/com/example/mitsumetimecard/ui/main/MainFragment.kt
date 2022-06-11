@@ -23,7 +23,7 @@ import com.example.mitsumetimecard.calendar.CalenderFragment
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.dakoku.DakokuViewModel
-import com.example.mitsumetimecard.setting.LestTimeApplication
+import com.example.mitsumetimecard.setting.RestTimeApplication
 import com.example.mitsumetimecard.updatedialog.TimePickerFragment
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.google.firebase.database.DatabaseReference
@@ -403,7 +403,7 @@ class MainFragment : Fragment() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setTitle("休憩時間を選んでください")
 
-        val application = LestTimeApplication()
+        val application = RestTimeApplication()
         val list: MutableList<Int> = application.lestTimeDao.getMutableList()
         val arrayList:ArrayList<Int> = ArrayList(list)
         val stringArray:ArrayList<String> = arrayList.map { it.toString() }.toTypedArray().toCollection(ArrayList())

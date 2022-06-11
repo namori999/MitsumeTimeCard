@@ -10,157 +10,166 @@
     android:background="@color/colorAccent"
     >
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_margin="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginBottom="50dp"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:padding="10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/back"
-        app:layout_constraintTop_toBottomOf="@+id/back"
-        app:layout_constraintVertical_bias="1.0">
 
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:autoSizeTextType="uniform"
+        android:text="休憩時間の設定"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:autoSizeTextType="uniform"
+        android:text="休憩時間の選択肢を追加/削除します。リストは退勤した時に表示されます。"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/restTimeList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/restTimeList"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_margin="20dp"
+        android:layout_marginTop="60dp"
+        app:layout_constraintBottom_toTopOf="@+id/view"
+        app:layout_constraintTop_toBottomOf="@+id/textView2"
+        tools:layout_editor_absoluteX="50dp" />
+
+
+    <View
+        android:id="@+id/view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:background="@color/colorAccentLight"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
+        app:layout_constraintTop_toBottomOf="@+id/restTimeList"
+        tools:layout_editor_absoluteX="10dp" />
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/view">
+
+        <SeekBar
+            android:id="@+id/seekBar"
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:indeterminate="false"
+            android:max="200"
+            android:min="1"
+            android:paddingStart="50dp"
+            android:paddingLeft="20dp"
+            android:paddingEnd="50dp"
+            android:paddingRight="20dp"
+            android:progress="1"
+            android:progressTint="@color/white"
+            android:thumb="@drawable/thumb_image"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
+            app:layout_constraintTop_toBottomOf="@+id/view"
+            app:tickMarkTint="@color/white" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="200dp"
+            android:layout_height="80dp"
+            android:layout_gravity="center"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/white"
+            android:padding="20dp"
+            app:cardCornerRadius="100dp">
+
+            <TextView
+                android:id="@+id/selectedTimeText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:paddingRight="8dp"
+                android:textColor="@color/colorAccent"
+                android:textSize="36px"
+                android:textStyle="bold" />
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/maru"
+        android:backgroundTint="@color/colorAccentLight"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:padding="20dp"
+        android:layout_marginBottom="60dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_add_24" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/addLRestButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:autoSizeTextType="uniform"
-            android:text="休憩時間 設定"
-            android:textColor="@color/colorAccent"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/back"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:paddingLeft="20dp"
+            android:text="休憩時間を追加する"
+            android:textColor="@color/white"
+            android:textStyle="bold" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/lestTimeList"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_margin="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/view"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            tools:layout_editor_absoluteX="50dp" />
-
-
-        <View
-            android:id="@+id/view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/colorAccentLight"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout6"
-            tools:layout_editor_absoluteX="10dp"
-            android:layout_marginBottom="30dp"/>
-
-
-        <LinearLayout
-            android:id="@+id/linearLayout5"
-            android:layout_width="wrap_content"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:background="@drawable/maru"
-            android:backgroundTint="@color/colorAccent"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:padding="20dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_baseline_add_24" />
-
-            <TextView
-                android:id="@+id/addLestButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:autoSizeTextType="uniform"
-                android:paddingLeft="20dp"
-                android:text="休憩時間を追加する"
-                android:textColor="@color/white"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout6"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
-            tools:layout_editor_absoluteX="50dp">
-
-            <SeekBar
-                android:id="@+id/seekBar1"
-                android:layout_width="400dp"
-                android:layout_height="wrap_content"
-                android:indeterminate="false"
-                android:paddingStart="50dp"
-                android:paddingEnd="50dp"
-                android:max="200"
-                android:min="1"
-                android:paddingLeft="20dp"
-                android:paddingRight="20dp"
-                android:progress="1"
-                android:progressTint="@color/colorAccent"
-                android:thumb="@drawable/thumb_image"
-                app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
-                app:layout_constraintTop_toBottomOf="@+id/view"
-                app:tickMarkTint="@color/colorAccent" />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="200dp"
-                android:layout_height="80dp"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:backgroundTint="@color/white"
-                android:padding="20dp"
-                app:cardCornerRadius="100dp">
-
-                <TextView
-                    android:id="@+id/tView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:paddingRight="8dp"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="36px"
-                    android:textStyle="bold" />
-
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
     <ImageView
-        android:id="@+id/back"
+        android:id="@+id/backButton"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="left"
-        android:layout_margin="20dp"
+        android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:background="@drawable/maru"
         android:backgroundTint="@color/colorAccent"
         android:src="@drawable/ic_baseline_arrow_back_24"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-     />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:src="@drawable/ic_logoimage" />
+        android:src="@drawable/ic_logoimage"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="10dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

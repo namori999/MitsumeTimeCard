@@ -3,59 +3,53 @@ package com.example.mitsumetimecard.setting
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
-import androidx.annotation.WorkerThread
 import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.mitsumetimecard.StandByActivity
-import com.example.mitsumetimecard.dakoku.Dakoku
-import com.example.mitsumetimecard.dakoku.DakokuDao
-import com.example.mitsumetimecard.dakoku.Repository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 
-@Entity (tableName = "lestTimeTable")
-data class lestTime(
+@Entity (tableName = "restTimeTable")
+data class RestTime(
     @PrimaryKey
-    var lestTime :Int
+    var restime :Int
 )
 
 
 @Dao
-interface LestTimeDao {
+interface RestTimeDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(lestTime: lestTime)
+    fun insert(restTime: RestTime)
 
     @Update
-    suspend fun update(lestTime: lestTime)
+    suspend fun update(restTime: RestTime)
 
     @Delete
-    fun delete(lestTime: lestTime)
+    fun delete(restTime: RestTime)
 
-    @Query("DELETE FROM `lestTimeTable`")
+    @Query("DELETE FROM `restTimeTable`")
     suspend fun deleteAll()
 
     @Insert
-    fun insertAll(users: List<lestTime>)
+    fun insertAll(users: List<RestTime>)
 
-    @Query("SELECT * FROM `lestTimeTable` ORDER BY lestTime")
-    fun getList(): List<lestTime>
+    @Query("SELECT * FROM `restTimeTable` ORDER BY restime")
+    fun getList(): List<RestTime>
 
-    @Query("SELECT * FROM `lestTimeTable` ORDER BY lestTime")
+    @Query("SELECT * FROM `restTimeTable` ORDER BY restime")
     fun getMutableList(): MutableList<Int>
 
 
 }
 
 
-@Database(entities = arrayOf(lestTime::class), version = 1 ,  exportSchema = false)
-abstract class LestTimeDatabase : RoomDatabase() {
+@Database(entities = arrayOf(RestTime::class), version = 2,  exportSchema = false)
+abstract class RestTimeDatabase : RoomDatabase() {
 
-    abstract fun lestTimeDao(): LestTimeDao
+    abstract fun RestTimeDao(): RestTimeDao
 
     private class databaseCallback(
         private val scope: CoroutineScope
@@ -67,15 +61,15 @@ abstract class LestTimeDatabase : RoomDatabase() {
             // comment out the following line.
             INSTANCE?.let { database ->
                 scope.launch(Dispatchers.IO) {
-                    populateDatabase(database.lestTimeDao())
+                    populateDatabase(database.RestTimeDao())
                 }
             }
         }
 
-        suspend fun populateDatabase(dao: LestTimeDao) {
+        suspend fun populateDatabase(dao: RestTimeDao) {
             dao.deleteAll()
             val lestTimeList = mutableListOf(
-                lestTime(12), lestTime(30),lestTime(42),lestTime(60)
+                RestTime(12), RestTime(30),RestTime(42),RestTime(60)
             )
             dao.insertAll(lestTimeList)
         }
@@ -83,19 +77,19 @@ abstract class LestTimeDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        var INSTANCE: LestTimeDatabase? = null
+        var INSTANCE: RestTimeDatabase? = null
 
         @SuppressLint("RestrictedApi")
         fun getDatabase(
             context: Context,
             scope: CoroutineScope
-        ): LestTimeDatabase {
+        ): RestTimeDatabase {
             return INSTANCE ?: synchronized(this) {
                 // Create database here
 
                 val instance = Room.databaseBuilder(
                     context,
-                    LestTimeDatabase::class.java,
+                    RestTimeDatabase::class.java,
                     "lestTimeTable"
                 )
                     .addCallback(databaseCallback(scope))
@@ -112,7 +106,7 @@ abstract class LestTimeDatabase : RoomDatabase() {
 }
 
 
-class LestTimeApplication: Application()  {
+class RestTimeApplication: Application()  {
 
     companion object {
         private lateinit var context: Context
@@ -122,6 +116,6 @@ class LestTimeApplication: Application()  {
     }
 
     val applicationScope = CoroutineScope(SupervisorJob())
-    val database = LestTimeDatabase.getDatabase(context, applicationScope)
-    val lestTimeDao = database.lestTimeDao()
+    val database = RestTimeDatabase.getDatabase(context, applicationScope)
+    val lestTimeDao = database.RestTimeDao()
 }

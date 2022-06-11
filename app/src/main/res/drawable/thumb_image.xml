@@ -9,7 +9,7 @@
                 />
             <corners
                 android:radius="100dp"/>
-            <solid android:color="@color/colorAccent" />
+            <solid android:color="@color/colorAccentLight" />
             <padding
                 android:bottom="2dp"
                 android:left="2dp"
