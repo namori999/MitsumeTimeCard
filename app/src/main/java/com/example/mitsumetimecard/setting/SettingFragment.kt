@@ -1,5 +1,6 @@
 package com.example.mitsumetimecard.setting
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ class SettingFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_setting, container, false)
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -51,19 +53,18 @@ class SettingFragment : Fragment() {
         val list: List<RestTime> = application.lestTimeDao.getList()
 
         val adapter = RestTimeAdapter(this.requireContext(), list)
-        adapter?.submitList(list)
+        adapter.submitList(list)
         recyclerView?.adapter = adapter
 
 
         val selecedTimeTextView = view.findViewById<TextView>(R.id.selectedTimeText)
-        val sBar = view.findViewById(R.id.seekBar) as SeekBar?
-        selecedTimeTextView!!.text = sBar!!.progress.toString() + "分"
-
-        sBar!!.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
+        val seekBar = view.findViewById(R.id.seekBar) as SeekBar?
+        selecedTimeTextView.text = seekBar?.progress.toString() + "分"
+        seekBar?.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
             var pval = 0
             override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
                 pval = progress
-                selecedTimeTextView!!.text = pval.toString() + "分"
+                selecedTimeTextView.text = pval.toString() + "分"
             }
             override fun onStartTrackingTouch(seekBar: SeekBar) {
             }
@@ -71,9 +72,9 @@ class SettingFragment : Fragment() {
             }
         })
 
-        val addButton :TextView = view.findViewById(R.id.addLRestButton)
+        val addButton :TextView = view.findViewById(R.id.addRestButton)
         addButton.setOnClickListener(){
-            application.database.RestTimeDao().insert(RestTime(sBar!!.progress))
+            application.database.RestTimeDao().insert(RestTime(seekBar!!.progress))
             recyclerView.adapter = adapter
 
             adapter.submitList(null)
@@ -81,6 +82,7 @@ class SettingFragment : Fragment() {
 
             adapter.notifyDataSetChanged()
         }
+
     }
 
     companion object {

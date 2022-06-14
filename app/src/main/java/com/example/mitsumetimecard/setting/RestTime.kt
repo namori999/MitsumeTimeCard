@@ -24,11 +24,9 @@ interface RestTimeDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(restTime: RestTime)
 
-    @Update
-    suspend fun update(restTime: RestTime)
-
     @Delete
     fun delete(restTime: RestTime)
+
 
     @Query("DELETE FROM `restTimeTable`")
     suspend fun deleteAll()

@@ -1,7 +1,6 @@
 package com.example.mitsumetimecard
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,16 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.mitsumetimecard.dakoku.DakokuApplication
-import com.example.mitsumetimecard.ui.main.MainFragment
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -30,7 +26,6 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var mAdapter: ViewsSliderAdapter? = null
     private lateinit var layouts: IntArray
     lateinit var viewPager: ViewPager2
     private lateinit var model: MainViewModel
@@ -130,22 +125,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        //setViewTimer()
         hideSystemUI()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Log.d("mainActivity", "onDestoroy")
-    }
-
-    override fun onRestart() {
-        super.onRestart()
-        Log.d("mainActivity", "onRestart")
-    }
-
-    override fun onStart() {
-        super.onStart()
     }
 
     override fun onPause() {
@@ -154,22 +134,16 @@ class MainActivity : AppCompatActivity() {
         Log.d("MainActivity","onPause")
     }
 
-
     private fun init() {
         layouts = intArrayOf(
-            R.layout.main_fragment,
+            R.layout.fragment_main,
             R.layout.fragment_calender,
             R.layout.kintai_table_layout
         )
-        mAdapter = ViewsSliderAdapter()
 
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
         viewPager.registerOnPageChangeCallback(pageChangeCallback)
-    }
-
-    private fun getItem(i: Int): Int {
-        return viewPager.getCurrentItem() + i
     }
 
     var pageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
@@ -183,32 +157,6 @@ class MainActivity : AppCompatActivity() {
                 Log.d("MainAcivity", "pagePosition = else")
                 removeTimer()
             }
-        }
-    }
-
-    inner class ViewsSliderAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-            val view: View = LayoutInflater.from(parent.context)
-                .inflate(viewType, parent, false)
-            return SliderViewHolder(view)
-        }
-
-        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
-        }
-
-        override fun getItemViewType(position: Int): Int {
-            return layouts.get(position)
-        }
-
-        override fun getItemCount(): Int {
-            return layouts.size
-        }
-
-        inner class SliderViewHolder(view: View?) : RecyclerView.ViewHolder(view!!) {
-            var title: TextView? = null
-            var year: TextView? = null
-            var genre: TextView? = null
         }
     }
 
