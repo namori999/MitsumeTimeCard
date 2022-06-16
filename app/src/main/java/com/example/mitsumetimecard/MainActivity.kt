@@ -72,10 +72,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         hideSystemUI()
-
-        //firebase
-        database = Firebase.database.reference
-
+        
         //show username
         model = ViewModelProviders.of(this@MainActivity).get(MainViewModel::class.java)
         val userNameTxt = findViewById<TextView>(R.id.dakokushaTxt)
@@ -133,6 +130,7 @@ class MainActivity : AppCompatActivity() {
         removeTimer()
         Log.d("MainActivity","onPause")
     }
+
 
     private fun init() {
         layouts = intArrayOf(

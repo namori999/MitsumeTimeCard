@@ -189,7 +189,7 @@ class MainFragment : Fragment() {
         }
 
         taikinBtn.setOnClickListener() {
-            MainActivity().removeTimer()
+
 
             uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
             if (uncompletedDakokuList.isNullOrEmpty()) {
