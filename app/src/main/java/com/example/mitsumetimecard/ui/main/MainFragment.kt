@@ -125,7 +125,6 @@ class MainFragment : Fragment() {
             override fun onChanged(o: String?) {
                 val selectedName = o!!.toString()
                 empname = selectedName
-                data = repository.getDataRowCount(date,empname)
                 initiallizeButton()
 
                 val dakokuByName = application.repository.getDakokuByName(empname).asLiveData()
@@ -147,9 +146,6 @@ class MainFragment : Fragment() {
             }
 
         })
-
-        //firebase database
-        database = Firebase.database.reference
 
         //onClick
         view.setOnClickListener(){

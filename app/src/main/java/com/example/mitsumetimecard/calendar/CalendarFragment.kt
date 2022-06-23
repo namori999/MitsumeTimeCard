@@ -52,13 +52,10 @@ private const val ARG_PARAM2 = "param2"
  */
 @Suppress("UNREACHABLE_CODE")
 open class CalenderFragment : Fragment() {
-    private var param1: String? = null
-    private var param2: String? = null
 
     var application = DakokuApplication()
     private lateinit var model: MainViewModel
     private var userName: String = ""
-    private lateinit var empname: String
 
     var data: Dakoku? = null
     val repository = application.repository
@@ -68,26 +65,8 @@ open class CalenderFragment : Fragment() {
     private lateinit var taikinTxt :TextView
     private lateinit var kyukeiTxt :TextView
 
-
     companion object {
-        fun newInstance(param1: String, param2: String) =
-            CalenderFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-
         var selectedDate: LocalDate? = null
-    }
-
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
     }
 
     override fun onCreateView(
@@ -104,12 +83,14 @@ open class CalenderFragment : Fragment() {
 
         val context = this.requireContext()
 
+        //listener to get selectedDate from other fragment
         setFragmentResultListener("input"){ _, data ->
             val selectedDate = data.getString("toCalender","")
             clearCurrentDakoku()
             setCurrentDakoku(selectedDate)
         }
 
+        //set today's Dakoku Text
         dateTxt = view.findViewById(R.id.dateTxt)
         shukkinTxt = view.findViewById(R.id.shukkinTxt)
         taikinTxt = view.findViewById(R.id.taiknTxt)
@@ -142,15 +123,9 @@ open class CalenderFragment : Fragment() {
             }
         })
 
-        //get dakoku today
-        val date1: LocalDate = LocalDate.now()
-        selectedDate = date1
+        setTodaysDakoku()
 
-        data = application.repository.getDakokuByDateName(date1.toString(), userName)
-        setCurrentDakoku(selectedDate!!.toString())
-        Log.v("dakoku today", "${data}")
-
-        //go update fragment
+        //edit button
         val goEdit: ImageView = view?.findViewById(R.id.editBtn)
         goEdit.setOnClickListener() {
             val shukkinTime = data?.shukkin
@@ -197,12 +172,10 @@ open class CalenderFragment : Fragment() {
                     if (day.owner == DayOwner.THIS_MONTH) {
                         val currentSelection = selectedDate
                         selectedDate = day.date
-
                         calendarView.notifyDateChanged(day.date)
                         if (currentSelection != null) {
                             calendarView.notifyDateChanged(currentSelection)
                         }
-
                         setCurrentDakoku(selectedDate!!.toString())
                     }
                 }
@@ -277,6 +250,15 @@ open class CalenderFragment : Fragment() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    private fun setTodaysDakoku() {
+        val date1: LocalDate = LocalDate.now()
+        selectedDate = date1
+        data = application.repository.getDakokuByDateName(date1.toString(), userName)
+        setCurrentDakoku(selectedDate!!.toString())
+        Log.v("dakoku today", "${data}")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     open fun setCurrentDakoku(day: String) {
         val empname = userName
         data = repository.getDakokuByDateName(selectedDate.toString(), empname)
@@ -285,7 +267,6 @@ open class CalenderFragment : Fragment() {
         val shukkinTxt = view?.findViewById<TextView>(R.id.shukkinTxt)
         val taikinTxt = view?.findViewById<TextView>(R.id.taiknTxt)
         val kyukeiTxt = view?.findViewById<TextView>(R.id.kyukeiTxt)
-
 
         if (data == null) {
             dateTxt?.setText("${day}")
