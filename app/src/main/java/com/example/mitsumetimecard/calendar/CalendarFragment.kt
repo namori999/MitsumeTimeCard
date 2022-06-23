@@ -55,7 +55,7 @@ open class CalenderFragment : Fragment() {
 
     var application = DakokuApplication()
     private lateinit var model: MainViewModel
-    private var userName: String = ""
+    private var empName: String = ""
 
     var data: Dakoku? = null
     val repository = application.repository
@@ -90,7 +90,8 @@ open class CalenderFragment : Fragment() {
             setCurrentDakoku(selectedDate)
         }
 
-        //set today's Dakoku Text
+        //implement textView
+
         dateTxt = view.findViewById(R.id.dateTxt)
         shukkinTxt = view.findViewById(R.id.shukkinTxt)
         taikinTxt = view.findViewById(R.id.taiknTxt)
@@ -103,8 +104,8 @@ open class CalenderFragment : Fragment() {
 
             override fun onChanged(o: String?) {
                 val selectedName = o!!.toString()
-                userName = selectedName
-                val dakokuByName = application.repository.getDakokuByName(userName).asLiveData()
+                empName = selectedName
+                val dakokuByName = application.repository.getDakokuByName(empName).asLiveData()
 
                 dakokuByName.observe(viewLifecycleOwner, object : Observer,
                     androidx.lifecycle.Observer<List<Dakoku>> {
@@ -131,7 +132,7 @@ open class CalenderFragment : Fragment() {
             val shukkinTime = data?.shukkin
             val taikinTime = data?.taikin
             val lestTime = data?.rest
-            val name = userName
+            val name = empName
             val date = selectedDate
 
             if (date == null){
@@ -253,14 +254,12 @@ open class CalenderFragment : Fragment() {
     private fun setTodaysDakoku() {
         val date1: LocalDate = LocalDate.now()
         selectedDate = date1
-        data = application.repository.getDakokuByDateName(date1.toString(), userName)
         setCurrentDakoku(selectedDate!!.toString())
-        Log.v("dakoku today", "${data}")
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     open fun setCurrentDakoku(day: String) {
-        val empname = userName
+        val empname = empName
         data = repository.getDakokuByDateName(selectedDate.toString(), empname)
 
         val dateTxt = view?.findViewById<TextView>(R.id.dateTxt)
