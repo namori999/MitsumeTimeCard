@@ -38,7 +38,6 @@ import java.util.*
 
 class MainFragment : Fragment() {
 
-
     var application = DakokuApplication()
     var dakokuViewModel = DakokuViewModel(application.repository)
     private var empname:String = ""
@@ -53,7 +52,6 @@ class MainFragment : Fragment() {
     private lateinit var shukkinBtn: Button
     private lateinit var taikinBtn: Button
 
-    var myAlertDialog: AlertDialog? = null
 
     companion object {
 
@@ -102,12 +100,12 @@ class MainFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         //get date and time
-        val textDate = view?.findViewById<TextView>(R.id.textDate)
+        val textDate = view.findViewById<TextView>(R.id.textDate)
         val onlyDate: LocalDate = LocalDate.now()
         val dateTime: LocalDateTime = LocalDateTime.now()
         val dtformat: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd E")
-        val fdate2: String = dtformat.format(dateTime)
-        textDate?.setText("$fdate2")
+        val formatted: String = dtformat.format(dateTime)
+        textDate?.setText("$formatted")
 
         CalenderFragment.selectedDate = onlyDate
 
@@ -115,8 +113,8 @@ class MainFragment : Fragment() {
         val date = onlyDate.toString()
 
         //buttons
-        shukkinBtn = view?.findViewById<Button>(R.id.shukkinBtn)!!
-        taikinBtn = view?.findViewById<Button>(R.id.taikinBtn)!!
+        shukkinBtn = view.findViewById<Button>(R.id.shukkinBtn)
+        taikinBtn = view.findViewById<Button>(R.id.taikinBtn)
         val context = this.requireContext()
 
         //get username
@@ -189,8 +187,6 @@ class MainFragment : Fragment() {
         }
 
         taikinBtn.setOnClickListener() {
-
-
             uncompletedDakokuList = repository.getDakokuOnlyShukkin(empname)
             if (uncompletedDakokuList.isNullOrEmpty()) {
                 data = repository.getDataRowCount(date, empname)
@@ -234,13 +230,22 @@ class MainFragment : Fragment() {
     private fun getMarumeTime():Int{
         val hour = LocalDateTime.now().hour
         val minute = LocalDateTime.now().minute
-        val marume:Int = (round(minute * 1.0 / 6) * 6).toInt()
+        val baisuu : Int = minute/6
+        val amari : Int = minute - (6 * baisuu)
+
+        var marumeMinute:Int
+        if (amari <= 4){
+            marumeMinute = 6 * baisuu
+        } else {
+            marumeMinute = 6 * (baisuu + 1)
+        }
+
         val marumeTime:Int
-        val checkMarume = (marume % 100)
+        val checkMarume = (marumeMinute % 100)
         if (56 < checkMarume ){
             marumeTime = (hour + 1) * 100
         }else{
-            marumeTime = hour * 100 + marume
+            marumeTime = hour * 100 + marumeMinute
         }
 
         return marumeTime
