@@ -428,7 +428,6 @@ class MainFragment : Fragment() {
         ) { dialog, which ->
             Toast.makeText(requireContext(), "退勤しました", Toast.LENGTH_SHORT)
                 .show()
-
             hideSystemUI()
         }
 
@@ -462,16 +461,9 @@ class MainFragment : Fragment() {
         completeDakoku()
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPause() {
-        super.onPause()
-        Log.d("mainfragment","onPause")
-    }
-
     override fun onResume() {
         super.onResume()
         hideSystemUI()
-        Log.d("mainfragment","onResume")
     }
 
     private fun hideSystemUI() {
