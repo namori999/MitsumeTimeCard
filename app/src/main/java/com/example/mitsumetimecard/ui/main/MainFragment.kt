@@ -428,12 +428,8 @@ class MainFragment : Fragment() {
         ) { dialog, which ->
             Toast.makeText(requireContext(), "退勤しました", Toast.LENGTH_SHORT)
                 .show()
-            val taikinBtn: Button? = view?.findViewById(R.id.taikinBtn)
-            taikinBtn?.setBackgroundTintList(
-                this.resources.getColorStateList(R.color.colorAccentLight)
-            );
+
             hideSystemUI()
-            MainActivity().setViewTimer()
         }
 
         val alert = alertDialog.create()
