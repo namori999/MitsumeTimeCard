@@ -26,9 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mitsumetimecard.JitudoViewModel
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.calendar.CalenderFragment
-import com.example.mitsumetimecard.dakoku.Dakoku
-import com.example.mitsumetimecard.dakoku.DakokuApplication
-import com.example.mitsumetimecard.dakoku.DakokuViewModel
+import com.example.mitsumetimecard.dakoku.*
 import com.example.mitsumetimecard.ui.main.MainFragment
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
@@ -68,6 +66,7 @@ class KintaiTableFragment() : Fragment(){
         // RecyclerView の設定
         val recyclerView = view?.findViewById<RecyclerView>(R.id.recycleview)
         val adapter = this.activity?.let { TableAdapter1(it) }
+        adapter?.setHasStableIds(true)
         recyclerView?.adapter =adapter
         recyclerView?.layoutManager = LinearLayoutManager(this.requireContext())
         recyclerView?.setHasFixedSize(true)
@@ -150,7 +149,7 @@ class KintaiTableFragment() : Fragment(){
         }
     }
 
-    private fun getFilterdList(selectedMonth: String):List<Dakoku> {
+    private fun getDakokuListThisMonth(selectedMonth: String):List<Dakoku> {
         val list:List<Dakoku> = application.repository.getDakokuListByName(userName)
         val filterdList = list.filter { it.date!!.startsWith(selectedMonth)}
         return filterdList
@@ -159,7 +158,7 @@ class KintaiTableFragment() : Fragment(){
     @SuppressLint("NotifyDataSetChanged", "SetTextI18n")
     private fun updateList(selectedMonth: String){
         val adapter = this.activity?.let { TableAdapter1(it) }
-        val filterdList = getFilterdList(selectedMonth)
+        val filterdList = getDakokuListThisMonth(selectedMonth)
         notifyDatasetChanged(adapter,filterdList)
 
         val nullcheckList = filterdList
@@ -204,11 +203,12 @@ class KintaiTableFragment() : Fragment(){
         })
     }
 
+    private val repository = MainFragment.dakokuViewModel.repository
     private fun showJitsudoAlart(){
-        val filterdList = getFilterdList(selectedMonth)
+        val filterdList = getDakokuListThisMonth(selectedMonth)
         for(i in filterdList.iterator()){
-            val jitsudo = MainFragment.calcurateJitsudou(i.shukkin,i.taikin)
-            if (jitsudo == 0.0 && (i.shukkin != 0 || i.taikin != 0)){
+            val jitsudo = repository.calcurateJitsudou(i.shukkin,i.taikin)
+            if (jitsudo <= 0.0 && (i.shukkin != 0 || i.taikin != 0)){
                 Toast.makeText(this.requireContext(), "＊実働時間がマイナス または 0時間になる日があります。" +
                         "出退勤時間を確認してください。", Toast.LENGTH_LONG)
                     .show()

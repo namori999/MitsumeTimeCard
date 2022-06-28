@@ -152,8 +152,6 @@ class UpdateDialogFragment : DialogFragment() {
                     val taikin = editT.toIntOrNull()
                     val kyukei = editL.toIntOrNull()
 
-                    val jitsudo = MainFragment.calcurateJitsudou(shukkin,taikin)
-
                     val data = Dakoku(
                         id,
                         name,
@@ -161,11 +159,12 @@ class UpdateDialogFragment : DialogFragment() {
                         shukkin,
                         taikin,
                         kyukei!!,
-                        jitsudo,
+                        0.0,
                         ""
                     )
 
                     dakokuViewModel.insertOrUpdate(data)
+                    dakokuViewModel.updateJitsudo(date,name)
                     Log.v("TAG", "data to insert : $data")
 
 

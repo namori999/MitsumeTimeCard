@@ -34,6 +34,8 @@ class MainActivity : AppCompatActivity() {
 
     private val tabTitleArray :Array<String> = arrayOf("打刻", "カレンダー", "月別の記録")
 
+
+
     var timeoutInMs: Long = 10000
     private var timer:Timer?= null
     private lateinit var timerTask: TimerTask
@@ -144,17 +146,30 @@ class MainActivity : AppCompatActivity() {
         viewPager.registerOnPageChangeCallback(pageChangeCallback)
     }
 
+    private var isMainFragment :Boolean = false
     var pageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
-
             if (position == 0) {
                 Log.d("MainAcivity", "pagePosition = 1")
+                isMainFragment = true
                 setViewTimer()
             } else {
                 Log.d("MainAcivity", "pagePosition = else")
+                isMainFragment = false
                 removeTimer()
             }
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            Log.d("MainAcivity", "hasFocus = true")
+            if (isMainFragment == true) setViewTimer()
+        }else{
+            Log.d("MainAcivity", "hasFocus = false")
+            removeTimer()
         }
     }
 

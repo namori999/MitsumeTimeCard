@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.asLiveData
@@ -27,9 +28,7 @@ import com.example.mitsumetimecard.setting.RestTimeApplication
 import com.example.mitsumetimecard.updatedialog.TimePickerFragment
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import java.lang.Math.round
+import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -38,53 +37,32 @@ import java.util.*
 
 class MainFragment : Fragment() {
 
-    var application = DakokuApplication()
-    var dakokuViewModel = DakokuViewModel(application.repository)
-    private var empname:String = ""
-    private var selectedTime:Int =0
-
-    private lateinit var database: DatabaseReference
     private lateinit var model: MainViewModel
-    private val repository = dakokuViewModel.repository
-    private var data: Int = 0
     private lateinit var uncompletedDakokuList:List<Dakoku>
 
     private lateinit var shukkinBtn: Button
     private lateinit var taikinBtn: Button
 
-
     companion object {
 
-        var pickedTaikin:Int = 0
-        fun calcurateJitsudou(shukkinTime:Int?, taikinTime:Int?) :Double{
-            if (shukkinTime == null || shukkinTime == 0){
-                Log.d("calcurate jitsudo","no shukkin record")
-            }else if (taikinTime == null || taikinTime == 0) {
-                Log.d("calcurate jitsudo","no taikin record")
-            }else{
-                val startH = (shukkinTime / 100) * 60
-                val startS: Int = (shukkinTime % 100)
-                val endH: Int = (taikinTime / 100) * 60
-                val endS: Int = (taikinTime % 100)
+        @SuppressLint("StaticFieldLeak")
+        var application = DakokuApplication()
+        var dakokuViewModel = DakokuViewModel(application.repository)
+        private val repository = dakokuViewModel.repository
+        private var data: Int = 0
+        private var empname:String = ""
 
-                if (shukkinTime > taikinTime && taikinTime/100 < 7) {
-                    val end30H = (taikinTime /100 + 24) *60
-                    val start: Int = (startH + startS) //minutes
-                    val end: Int = (end30H + endS) //minutes
-                    val sa: Double = (end - start) / 60.0
-                    val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
-                    return zitsudo
-                }else{
-                    val start: Int = (startH + startS) //minutes
-                    val end: Int = (endH + endS) //minutes
-                    val sa: Double = (end - start) / 60.0
-                    val zitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
-                    return zitsudo
-                }
-            }
 
-            return 0.0
+        fun updateShukkin(shukkinTime: Int,date: String){
+            dakokuViewModel.updateShukkin(shukkinTime,date,empname)
+            dakokuViewModel.updateJitsudo(date,empname)
         }
+
+        fun updateTaikin(taikinTime: Int,date: String){
+            dakokuViewModel.updateTaikin(taikinTime, date, empname)
+            dakokuViewModel.updateJitsudo(date, empname)
+        }
+
     }
 
     override fun onCreateView(
@@ -143,6 +121,7 @@ class MainFragment : Fragment() {
                 })
             }
             override fun update(o: Observable?, arg: Any?) {
+
             }
 
         })
@@ -189,22 +168,12 @@ class MainFragment : Fragment() {
                 val marumeTime = getMarumeTime()
 
                 if (data == 0) {
+
                     val newdakoku =
-                        Dakoku(0, empname, date, 0, marumeTime.toInt(), selectedTime, 0.0, "")
-                    Log.v("TAG", "data to insert(Taikin) : $newdakoku")
+                        Dakoku(0, empname, date, 0, marumeTime.toInt(), 0, 0.0, "")
                     dakokuViewModel.insert(newdakoku)
                     dakokuViewModel.insertOriginalTaikin(marumeTime,date,empname)
-                    updateButtonView(newdakoku, shukkinBtn!!, taikinBtn, context)
                     showLestAlartDialog(date, empname)
-
-                    Toast.makeText(requireContext(), "出勤時間を追加してください", Toast.LENGTH_SHORT).show()
-                    UpdateDialogFragment.newInstance(
-                        "${newdakoku.shukkin}",
-                        "${newdakoku?.taikin}",
-                        "${newdakoku?.rest}",
-                        empname,
-                        date
-                    ).show(requireFragmentManager(), UpdateDialogFragment.TAG)
                 }else{
                     updateDakoku("taikin")
                 }
@@ -220,7 +189,6 @@ class MainFragment : Fragment() {
             }
         }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getMarumeTime():Int{
@@ -251,27 +219,18 @@ class MainFragment : Fragment() {
     private fun updateDakoku(key:String){
         val marumeTime = getMarumeTime()
         val date = LocalDate.now().toString()
-        val dakoku:Dakoku? = repository.getDakokuByDateName(date,empname)
-        val jitsudo:Double
 
         when (key){
             "shukkin" -> {
                 dakokuViewModel.updateShukkin(marumeTime, date,empname)
-                jitsudo = calcurateJitsudou(dakoku?.shukkin, dakoku?.taikin)
-                dakokuViewModel.updateJitsudo(jitsudo, date, empname)
+                dakokuViewModel.updateJitsudo(date, empname)
                 setShukkinTimeText()
             }
             "taikin" -> {
                 dakokuViewModel.updateTaikin(marumeTime, date, empname)
-                jitsudo = calcurateJitsudou(dakoku?.shukkin, marumeTime)
-                dakokuViewModel.updateJitsudo(jitsudo, date, empname)
+                dakokuViewModel.updateJitsudo(date, empname)
                 setTaikinTimeText()
                 showLestAlartDialog(date, empname)
-
-                if (dakoku?.taikin == null || dakoku.taikin == 0) {
-                    //退勤がはじめて
-                    dakokuViewModel.insertOriginalTaikin(marumeTime,date,empname)
-                }
             }
             else -> return
         }
@@ -378,8 +337,7 @@ class MainFragment : Fragment() {
         ){ dialog, which ->
             dakokuViewModel.updateTaikin(getMarumeTime(),lastShukkinDate,empname)
             dakokuViewModel.insertOriginalTaikin(getMarumeTime(),lastShukkinDate,empname)
-            val jitsudo = calcurateJitsudou(dakoku?.shukkin , getMarumeTime())
-            dakokuViewModel.updateJitsudo(jitsudo,lastShukkinDate,empname)
+            dakokuViewModel.updateJitsudo(lastShukkinDate,empname)
             updateButtonView(dakoku,shukkinBtn,taikinBtn,this.requireContext())
             showLestAlartDialog(lastShukkinDate,empname)
         }
@@ -419,11 +377,18 @@ class MainFragment : Fragment() {
             }
         })
 
+        val dakokuToday = dakokuViewModel.repository.getDakokuByDateName(date, empname)
         alertDialog.setPositiveButton(
             "決定"
         ) { dialog, which ->
             Toast.makeText(requireContext(), "退勤しました", Toast.LENGTH_SHORT)
                 .show()
+
+            if (dakokuToday?.shukkin == null || dakokuToday.shukkin == 0) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    TimePickerFragment.myTimePicker.showShukkinTimePicker(this.requireContext(),date)
+                }
+            }
             hideSystemUI()
         }
 
@@ -443,10 +408,6 @@ class MainFragment : Fragment() {
 
             if (lastShukkinDakoku.date != yesterDay && lastShukkinDakoku.date != today) {
                 TimePickerFragment.myTimePicker.showTaikinTimePicker(this.requireContext(),lastShukkinDakoku.date!!)
-                dakokuViewModel.updateTaikin(pickedTaikin, lastShukkinDakoku.date!!, empname)
-                val jitsudo = calcurateJitsudou(lastShukkinDakoku.shukkin, pickedTaikin)
-                dakokuViewModel.updateJitsudo(jitsudo, lastShukkinDakoku.date!!, empname)
-                hideSystemUI()
             }
         }
     }

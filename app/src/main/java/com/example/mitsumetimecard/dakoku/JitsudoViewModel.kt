@@ -27,7 +27,7 @@ class JitudoViewModel: ViewModel() {
 
 
     fun setJitsudo(totalJitsudo:Double){
-            dataSet.setValue(totalJitsudo)
+        dataSet.setValue(totalJitsudo)
     }
 
 }

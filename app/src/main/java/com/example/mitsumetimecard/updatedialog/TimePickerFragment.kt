@@ -1,27 +1,26 @@
 package com.example.mitsumetimecard.updatedialog
 
 import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.content.DialogInterface
 import android.os.Build
 import android.os.Bundle
-import android.widget.DatePicker
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.Fragment
-import androidx.room.Update
 import com.example.mitsumetimecard.MainActivity
-import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.ui.main.MainFragment
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.*
 
 class TimePickerFragment : DialogFragment() {
+
+    companion object{
+        var pickedTime :Int =0
+    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     object myTimePicker {
 
@@ -78,12 +77,14 @@ class TimePickerFragment : DialogFragment() {
                 { _, getHour, getMinutes ->
                     val time = String.format("%02d%02d", getHour, getMinutes)
                     if (time.substring(0,2) =="00"){
-                        MainFragment.pickedTaikin = String.format("%02d%02d", 24, getMinutes).toIntOrNull()!!
+                        pickedTime = String.format("%02d%02d", 24, getMinutes).toIntOrNull()!!
+                        MainFragment.updateTaikin(pickedTime, lastShukkinDate)
                         Toast.makeText(
                             context, "退勤を記録しました", Toast.LENGTH_LONG
                         ).show()
                     } else {
-                        MainFragment.pickedTaikin = time.toIntOrNull()!!
+                        pickedTime = time.toIntOrNull()!!
+                        MainFragment.updateTaikin(pickedTime, lastShukkinDate)
                         Toast.makeText(
                             context, "退勤を記録しました", Toast.LENGTH_LONG
                         ).show()
@@ -94,7 +95,7 @@ class TimePickerFragment : DialogFragment() {
                 minutes,
                 true
             )
-            picker.setTitle("$lastShukkinDate の退勤")
+            picker.setTitle("$lastShukkinDate の退勤時間")
             picker.show()
 
             Toast.makeText(
@@ -103,5 +104,55 @@ class TimePickerFragment : DialogFragment() {
             ).show()
         }
 
+        fun showShukkinTimePicker(context:Context,date:String){
+            val dateTIme = LocalDateTime.now()
+            var hourOfDay = dateTIme.hour
+            var minutes = dateTIme.minute
+
+            // ドラム式TimePicker表示
+            val picker = TimePickerDialog(
+                context,
+                AlertDialog.THEME_HOLO_LIGHT,
+
+                { _, getHour, getMinutes ->
+                    val time = String.format("%02d%02d", getHour, getMinutes)
+                    if (time.substring(0,2) =="00"){
+                        pickedTime = String.format("%02d%02d", 24, getMinutes).toIntOrNull()!!
+                        MainFragment.updateShukkin(pickedTime,date)
+                        Log.d("timepicker","${pickedTime}")
+                        Toast.makeText(
+                            context, "本日の出勤をお忘れのようです。\n" +
+                                    "出勤した時間を選んでください。", Toast.LENGTH_LONG
+                        ).show()
+
+                    } else {
+                        pickedTime = time.toIntOrNull()!!
+                        MainFragment.updateShukkin(pickedTime,date)
+                        Log.d("timepicker","${pickedTime}")
+                    }
+                },
+                // TimePickerが初期表示する時刻
+                hourOfDay,
+                minutes,
+                true
+            )
+            picker.setTitle("今日の出勤時間")
+            picker.show()
+
+            Toast.makeText(
+                context, "本日の出勤をお忘れのようです。\n" +
+                        "出勤した時間を選んでください。", Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        MainActivity().removeTimer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        MainActivity().setViewTimer()
     }
 }

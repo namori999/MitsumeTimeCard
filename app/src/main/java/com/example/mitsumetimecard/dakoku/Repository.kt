@@ -1,6 +1,9 @@
 package com.example.mitsumetimecard.dakoku
 
+import android.util.Log
 import androidx.annotation.WorkerThread
+import com.example.mitsumetimecard.MainActivity
+import com.example.mitsumetimecard.ui.main.MainFragment
 import kotlinx.coroutines.flow.Flow
 
 class Repository(private val dakokuDao: DakokuDao) {
@@ -46,8 +49,43 @@ class Repository(private val dakokuDao: DakokuDao) {
 
     @Suppress("RedundantSuspendModifier")
     @WorkerThread
-    suspend fun updateJitsudo(jitsudo: Double?,date:String,name: String){
+    suspend fun updateJitsudo(date:String,name: String) :Double{
+        val shukkin = getDakokuByDateName(date, name)?.shukkin
+        val taikin = getDakokuByDateName(date,name)?.taikin
+        val jitsudo = calcurateJitsudou(shukkin,taikin)
         dakokuDao.updateJitsudo(jitsudo,date,name)
+
+        return jitsudo
+    }
+
+    fun calcurateJitsudou(shukkinTime:Int?, taikinTime:Int?) :Double{
+        if (shukkinTime == null || shukkinTime == 0){
+            Log.d("calcurate jitsudo","no shukkin record")
+        }else if (taikinTime == null || taikinTime == 0) {
+            Log.d("calcurate jitsudo","no taikin record")
+        }else{
+            val startH = (shukkinTime / 100) * 60
+            val startS: Int = (shukkinTime % 100)
+            val endH: Int = (taikinTime / 100) * 60
+            val endS: Int = (taikinTime % 100)
+
+            if (shukkinTime > taikinTime && taikinTime/100 < 7) {
+                val end30H = (taikinTime /100 + 24) *60
+                val start: Int = (startH + startS) //minutes
+                val end: Int = (end30H + endS) //minutes
+                val sa: Double = (end - start) / 60.0
+                val jitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
+                return jitsudo
+            }else{
+                val start: Int = (startH + startS) //minutes
+                val end: Int = (endH + endS) //minutes
+                val sa: Double = (end - start) / 60.0
+                val jitsudo: Double = (Math.round(sa * 10.0) / 10.0) //to hour
+                return jitsudo
+            }
+        }
+
+        return 0.0
     }
 
 

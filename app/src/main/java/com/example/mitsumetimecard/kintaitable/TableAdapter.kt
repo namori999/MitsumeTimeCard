@@ -7,14 +7,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mitsumetimecard.JitudoViewModel
-import com.example.mitsumetimecard.MainActivity
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 
@@ -115,10 +111,12 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
         }
 
         val jitsudo: Double? = jitsudoTime
-        if (jitsudo == 0.0 && shukkinTime !== 0 && taikinTime !== 0 ) {
-            holder.let { it.jitudouView.text = "＊" }
-        } else {
-            holder.let{it.jitudouView.text = jitsudo.toString() + " h" }
+        if (jitsudo != null) {
+            if (jitsudo <= 0.0 && shukkinTime !== 0 && taikinTime !== 0 ) {
+                holder.let { it.jitudouView.text = "＊" }
+            } else {
+                holder.let{it.jitudouView.text = jitsudo.toString() + " h" }
+            }
         }
 
         if (jitsudo == null){
@@ -140,10 +138,12 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     fun getItem(position: Int): Dakoku? {
         return myDataSet?.get(position)
     }
-
-    fun getList(): List<Dakoku>? {
-        return myDataSet
+    
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
     }
 
-
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
 }
