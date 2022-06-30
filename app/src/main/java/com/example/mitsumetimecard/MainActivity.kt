@@ -4,14 +4,11 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.example.mitsumetimecard.dakoku.DakokuApplication
@@ -19,8 +16,6 @@ import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
 import java.util.*
 
 
@@ -32,26 +27,24 @@ class MainActivity : AppCompatActivity() {
     val application = DakokuApplication()
     private lateinit var database: DatabaseReference
 
-    private val tabTitleArray :Array<String> = arrayOf("打刻", "カレンダー", "月別の記録")
-
-
+    private val tabTitleArray: Array<String> = arrayOf("打刻", "カレンダー", "月別の記録")
 
     var timeoutInMs: Long = 10000
-    private var timer:Timer?= null
+    private var timer: Timer? = null
     private lateinit var timerTask: TimerTask
 
     @SuppressLint("ClickableViewAccessibility")
     fun setViewTimer() {
-        if (timer ==null) timer = Timer()
+        if (timer == null) timer = Timer()
 
         timerTask = object : TimerTask() {
             override fun run() {
-                try{
+                try {
                     this.cancel()
-                    startActivity(Intent(this@MainActivity,StandByActivity::class.java))
+                    startActivity(Intent(this@MainActivity, StandByActivity::class.java))
                     this@MainActivity.finish()
-                }catch (e: Exception){
-                    Log.e("MainActivity companion","error")
+                } catch (e: Exception) {
+                    Log.e("MainActivity companion", "error")
                 }
             }
         }
@@ -66,7 +59,7 @@ class MainActivity : AppCompatActivity() {
             timer?.purge()
         }
         timer = null
-        Log.d("timer","removed")
+        Log.d("timer", "removed")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.main_activity)
 
         hideSystemUI()
-        
+
         //show username
         model = ViewModelProviders.of(this@MainActivity).get(MainViewModel::class.java)
         val userNameTxt = findViewById<TextView>(R.id.dakokushaTxt)
@@ -95,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         val backBtn: ImageView? = findViewById(R.id.back)
         backBtn?.setOnClickListener() {
             Log.v("onclick", "back button tapped")
-            startActivity(Intent(this@MainActivity,StandByActivity::class.java))
+            startActivity(Intent(this@MainActivity, StandByActivity::class.java))
             this@MainActivity.finish()
         }
 
@@ -103,10 +96,9 @@ class MainActivity : AppCompatActivity() {
         val name: String = intent.getStringExtra("EMP_NAME").toString()
         val b = Bundle()
         b.putString("COMMON_NAME_KEY", name)
-        model!!.setCurrentName(name)
+        model.setCurrentName(name)
 
         // removing toolbar elevation
-
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
         viewPager.setAdapter(ViewPagerFragmentAdapter(this))
@@ -121,7 +113,6 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
     override fun onResume() {
         super.onResume()
         hideSystemUI()
@@ -130,15 +121,14 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         removeTimer()
-        Log.d("MainActivity","onPause")
+        Log.d("MainActivity", "onPause")
     }
-
 
     private fun init() {
         layouts = intArrayOf(
             R.layout.fragment_main,
             R.layout.fragment_calender,
-            R.layout.kintai_table_layout
+            R.layout.fragment_kintai_table
         )
 
         val viewPager = findViewById<ViewPager2>(R.id.view_pager)
@@ -146,7 +136,7 @@ class MainActivity : AppCompatActivity() {
         viewPager.registerOnPageChangeCallback(pageChangeCallback)
     }
 
-    private var isMainFragment :Boolean = false
+    private var isMainFragment: Boolean = false
     var pageChangeCallback: OnPageChangeCallback = object : OnPageChangeCallback() {
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
@@ -167,7 +157,7 @@ class MainActivity : AppCompatActivity() {
         if (hasFocus) {
             Log.d("MainAcivity", "hasFocus = true")
             if (isMainFragment == true) setViewTimer()
-        }else{
+        } else {
             Log.d("MainAcivity", "hasFocus = false")
             removeTimer()
         }

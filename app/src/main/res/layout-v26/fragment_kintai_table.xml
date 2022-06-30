@@ -8,7 +8,7 @@
 
 
     <LinearLayout
-        android:id="@+id/linearLayout3"
+        android:id="@+id/currentMonthColumn"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="right"
@@ -73,7 +73,7 @@
         android:foregroundGravity="right"
         android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout3"
+        app:layout_constraintEnd_toStartOf="@+id/currentMonthColumn"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/Gray" />
 
@@ -86,14 +86,14 @@
         android:foregroundGravity="left"
         android:padding="12dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/linearLayout7"
+        app:layout_constraintEnd_toStartOf="@+id/kintaiTableColumn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tint="@color/Gray" />
 
 
     <LinearLayout
-        android:id="@+id/linearLayout7"
+        android:id="@+id/kintaiTableColumn"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center"
@@ -183,7 +183,7 @@
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycleview"
+            android:id="@+id/kintaiTable"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"

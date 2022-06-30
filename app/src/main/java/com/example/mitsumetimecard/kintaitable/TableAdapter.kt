@@ -112,7 +112,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
 
         val jitsudo: Double? = jitsudoTime
         if (jitsudo != null) {
-            if (jitsudo <= 0.0 && shukkinTime !== 0 && taikinTime !== 0 ) {
+            if (jitsudo <= 0.0) {
                 holder.let { it.jitudouView.text = "＊" }
             } else {
                 holder.let{it.jitudouView.text = jitsudo.toString() + " h" }
@@ -138,7 +138,7 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     fun getItem(position: Int): Dakoku? {
         return myDataSet?.get(position)
     }
-    
+
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }

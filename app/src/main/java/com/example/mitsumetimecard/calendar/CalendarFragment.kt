@@ -1,12 +1,9 @@
 package com.example.mitsumetimecard.calendar
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,21 +13,17 @@ import android.widget.Toast
 import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
-import androidx.core.os.HandlerCompat.postDelayed
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.asLiveData
 import com.example.mitsumetimecard.R
 import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.kizitonwose.calendarview.model.CalendarDay
-import com.kizitonwose.calendarview.model.CalendarMonth
 import com.kizitonwose.calendarview.model.DayOwner
 import com.kizitonwose.calendarview.ui.DayBinder
-import com.kizitonwose.calendarview.ui.MonthHeaderFooterBinder
 import com.kizitonwose.calendarview.ui.ViewContainer
 import com.kizitonwose.calendarview.utils.yearMonth
 import java.time.DayOfWeek
@@ -55,7 +48,7 @@ open class CalenderFragment : Fragment() {
 
     var application = DakokuApplication()
     private lateinit var model: MainViewModel
-    private var empName: String = ""
+    private var userName: String = ""
 
     var data: Dakoku? = null
     val repository = application.repository
@@ -91,7 +84,6 @@ open class CalenderFragment : Fragment() {
         }
 
         //implement textView
-
         dateTxt = view.findViewById(R.id.dateTxt)
         shukkinTxt = view.findViewById(R.id.shukkinTxt)
         taikinTxt = view.findViewById(R.id.taiknTxt)
@@ -99,30 +91,7 @@ open class CalenderFragment : Fragment() {
 
         //get username
         model = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-        model.mutableLiveData.observe(requireActivity(), object : Observer,
-            androidx.lifecycle.Observer<String> {
-
-            override fun onChanged(o: String?) {
-                val selectedName = o!!.toString()
-                empName = selectedName
-                val dakokuByName = application.repository.getDakokuByName(empName).asLiveData()
-
-                dakokuByName.observe(viewLifecycleOwner, object : Observer,
-                    androidx.lifecycle.Observer<List<Dakoku>> {
-                    @RequiresApi(Build.VERSION_CODES.O)
-                    override fun update(o: Observable?, arg: Any?) {
-                        setCurrentDakoku(selectedDate.toString())
-                    }
-                    @RequiresApi(Build.VERSION_CODES.O)
-                    override fun onChanged(t: List<Dakoku>?) {
-                        setCurrentDakoku(selectedDate.toString())
-                    }
-                })
-            }
-
-            override fun update(o: Observable?, arg: Any?) {
-            }
-        })
+        userName = model.getSelectedName()
 
         setTodaysDakoku()
 
@@ -132,7 +101,7 @@ open class CalenderFragment : Fragment() {
             val shukkinTime = data?.shukkin
             val taikinTime = data?.taikin
             val lestTime = data?.rest
-            val name = empName
+            val name = userName
             val date = selectedDate
 
             if (date == null){
@@ -259,7 +228,7 @@ open class CalenderFragment : Fragment() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     open fun setCurrentDakoku(day: String) {
-        val empname = empName
+        val empname = userName
         data = repository.getDakokuByDateName(selectedDate.toString(), empname)
 
         val dateTxt = view?.findViewById<TextView>(R.id.dateTxt)

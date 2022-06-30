@@ -10,4 +10,8 @@ class MainViewModel : ViewModel() {
     fun setCurrentName(name:String) {
         mutableLiveData.setValue(name)
     }
+
+    fun getSelectedName():String{
+        return mutableLiveData.value.toString()
+    }
 }
