@@ -76,6 +76,7 @@ class KintaiTableFragment() : Fragment() {
 
             @RequiresApi(Build.VERSION_CODES.O)
             override fun update(o: Observable?, arg: Any?) {
+                updateList(selectedMonth)
             }
 
             @RequiresApi(Build.VERSION_CODES.O)
@@ -144,7 +145,7 @@ class KintaiTableFragment() : Fragment() {
         adapter: com.example.mitsumetimecard.kintaitable.TableAdapter?,
         list: List<Dakoku>?
     ) {
-        adapter?.submitList(null)
+        //apter?.submitList(null)
 
         val recyclerView = view?.findViewById<RecyclerView>(R.id.kintaiTable)
         val adapter = this.activity?.let { TableAdapter1(it) }

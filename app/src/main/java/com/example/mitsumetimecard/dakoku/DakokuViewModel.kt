@@ -31,8 +31,10 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
     }
 
     fun insertOrUpdate(dakoku: Dakoku) = viewModelScope.launch {
-        repository.insertOrUpdate(dakoku)
-        database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakoku.makeString())
+        val jitsudo = repository.calcurateJitsudou(dakoku.shukkin!!,dakoku.taikin!!)
+        val dakokuWidhJitsudo = (Dakoku(0,dakoku.name,dakoku.date,dakoku.shukkin,dakoku.taikin,dakoku.rest,jitsudo,dakoku.state))
+        repository.insertOrUpdate(dakokuWidhJitsudo)
+        database.child("DakokuSheet").child("${dakoku.date}-${dakoku.name}").setValue(dakokuWidhJitsudo.makeString())
     }
 
 

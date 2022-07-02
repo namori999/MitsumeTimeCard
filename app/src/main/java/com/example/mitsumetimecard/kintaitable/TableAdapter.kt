@@ -16,7 +16,6 @@ import com.example.mitsumetimecard.dakoku.Dakoku
 
 
 class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.RecyclerViewHolder>() {
-
     private val mContext: Context? = context
     var myDataSet: List<Dakoku>? = null
 
@@ -41,7 +40,6 @@ class TableAdapter(context: Context) : RecyclerView.Adapter<TableAdapter.Recycle
     }
 
     inner class RecyclerViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
         var dateView: TextView
         var shukkinView: TextView
         var taikinView: TextView

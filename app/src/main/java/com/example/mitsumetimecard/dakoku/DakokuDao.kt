@@ -19,32 +19,31 @@ interface DakokuDao {
 
 
     @Transaction
-    suspend fun insertOrUpdateDakoku(table: Dakoku) {
-        if (getDateRowCount(table.date!!,table.name!!) > 0) {
-            if (table.jitsudo!! > 0.0) {
+    suspend fun insertOrUpdateDakoku(dakoku: Dakoku) {
+        if (getDateRowCount(dakoku.date!!,dakoku.name!!) > 0) {
+            if (dakoku.jitsudo!! > 0.0) {
                 updateDakoku(
-                    table.date,
-                    table.shukkin,
-                    table.taikin,
-                    table.rest,
-                    table.jitsudo,
-                    table.state,
-                    table.id
+                    dakoku.date,
+                    dakoku.shukkin,
+                    dakoku.taikin,
+                    dakoku.rest,
+                    dakoku.jitsudo,
+                    dakoku.state,
+                    dakoku.id
                 )
             }else{
                 updateDakoku(
-                    table.date,
-                    table.shukkin,
-                    table.taikin,
-                    table.rest,
+                    dakoku.date,
+                    dakoku.shukkin,
+                    dakoku.taikin,
+                    dakoku.rest,
                     0.0,
-                    table.state,
-                    table.id
+                    dakoku.state,
+                    dakoku.id
                 )
             }
-
         } else {
-            insert(table)
+            insert(dakoku)
         }
     }
 
