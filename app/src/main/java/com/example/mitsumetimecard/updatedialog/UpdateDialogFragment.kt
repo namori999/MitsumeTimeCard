@@ -26,7 +26,7 @@ class UpdateDialogFragment : DialogFragment() {
 
     var application = DakokuApplication()
     var dakokuViewModel = DakokuViewModel(application.repository)
-    private lateinit var jitudoModel : JitudoViewModel
+    private lateinit var jitudoModel: JitudoViewModel
 
     companion object {
 
@@ -37,7 +37,13 @@ class UpdateDialogFragment : DialogFragment() {
         private const val KEY_NAME = "KEY_NAME"
         private const val KEY_DATE = "KEY_DATE"
 
-        fun newInstance(shukkin: String, taikin: String, lest: String, name: String, date: String): UpdateDialogFragment {
+        fun newInstance(
+            shukkin: String,
+            taikin: String,
+            lest: String,
+            name: String,
+            date: String
+        ): UpdateDialogFragment {
             val args = Bundle()
             args.putString(KEY_SHUKKIN, shukkin)
             args.putString(KEY_TAIKIN, taikin)
@@ -49,12 +55,12 @@ class UpdateDialogFragment : DialogFragment() {
             return fragment
         }
 
-        var selectedDate:String =""
+        var selectedDate: String = ""
 
         lateinit var editD: EditText
         lateinit var editS: EditText
         lateinit var editT: EditText
-        lateinit var editL :EditText
+        lateinit var editL: EditText
     }
 
     override fun onCreateView(
@@ -74,25 +80,25 @@ class UpdateDialogFragment : DialogFragment() {
         val date = arguments?.getString(KEY_DATE)
 
         editS = view.findViewById(R.id.des_shukkin)
-        editS.setOnClickListener{
+        editS.setOnClickListener {
             TimePickerFragment.myTimePicker.showTimePicker(editS)
         }
 
         editT = view.findViewById(R.id.des_taikin)
-        editT.setOnClickListener{
+        editT.setOnClickListener {
             TimePickerFragment.myTimePicker.showTimePicker(editT)
         }
 
         editD = view.findViewById(R.id.des_date)
-        editD.setOnClickListener{
+        editD.setOnClickListener {
             val datePicker = DatePicker(this.requireContext())
             datePicker.calendarViewShown = false
             DatePickerFragment().show(requireFragmentManager(), "datePicker")
         }
 
         editL = view.findViewById(R.id.des_kyukei)
-        editL.setOnClickListener{
-           showAlertDialog()
+        editL.setOnClickListener {
+            showAlertDialog()
         }
 
         val name = arguments?.getString(KEY_NAME)
@@ -101,8 +107,8 @@ class UpdateDialogFragment : DialogFragment() {
             name.toString()
         )
 
-        val deleteImg = view.findViewById<ImageView>(R.id.closeImg)
-        deleteImg.setOnClickListener {
+        val closeButton = view.findViewById<ImageView>(R.id.closeImg)
+        closeButton.setOnClickListener {
             progress?.visibility = View.VISIBLE
             view.let {
                 dismiss()
@@ -110,81 +116,77 @@ class UpdateDialogFragment : DialogFragment() {
         }
 
         view.findViewById<LinearLayout>(R.id.btnPositive).setOnClickListener {
-
-            val editS =  view.findViewById<EditText>(R.id.des_shukkin).text.padStart(4, '0').toString()
-            val sH = editS.substring(0,2).toIntOrNull()
-            val sM = editS.substring(2,4).toIntOrNull()
-
-            val editT = view.findViewById<EditText>(R.id.des_taikin).text.padStart(4, '0').toString()
-            val tH = editT.substring(0,2).toIntOrNull()
-            val tM = editT.substring(2,4).toIntOrNull()
-
+            val editS =
+                view.findViewById<EditText>(R.id.des_shukkin).text.padStart(4, '0').toString()
+            val sH = editS.substring(0, 2).toIntOrNull()
+            val sM = editS.substring(2, 4).toIntOrNull()
+            val editT =
+                view.findViewById<EditText>(R.id.des_taikin).text.padStart(4, '0').toString()
+            val tH = editT.substring(0, 2).toIntOrNull()
+            val tM = editT.substring(2, 4).toIntOrNull()
             val editL = view.findViewById<EditText>(R.id.des_kyukei).text.toString()
 
             val name = arguments?.getString(KEY_NAME).toString()
             val date = editD.text.toString()
 
-
             val dakoku = application.repository.getDakokuByDateName(date, name)
-            val id:Int
-            if (dakoku?.id == null){
+            val id: Int
+            if (dakoku?.id == null) {
                 id = 0
-            }else {
+            } else {
                 id = dakoku.id
             }
-                if (editS == "" && editT == ""){
-                    Toast.makeText(this.requireActivity(),"出勤/退勤 時間を追加してください", Toast.LENGTH_SHORT).show()
-                }else if (editS == "") {
-                    Toast.makeText(this.requireActivity(),"出勤時間を追加してください", Toast.LENGTH_SHORT).show()
-                }else if(editT == "") {
-                    Toast.makeText(this.requireActivity(),"退勤時間を追加してください", Toast.LENGTH_SHORT).show()
-                }else if (sH != null && sH > 24) {
-                    Toast.makeText(this.requireActivity(), "出勤時間は 24時までを入力してください", Toast.LENGTH_SHORT).show()
-                } else if (sM != null && sM > 59) {
-                    Toast.makeText(this.requireActivity(), "出勤時間は 59分までを入力してください", Toast.LENGTH_SHORT).show()
-                } else if (tH != null && tH > 24) {
-                    Toast.makeText(this.requireActivity(), "退勤時間は 24時までを入力してください", Toast.LENGTH_SHORT).show()
-                } else if (tM != null && tM > 59) {
-                    Toast.makeText(this.requireActivity(), "退勤時間は 59分までを入力してください", Toast.LENGTH_SHORT).show()
-                } else {
+            if (editS == "" && editT == "") {
+                Toast.makeText(this.requireActivity(), "出勤/退勤 時間を追加してください", Toast.LENGTH_SHORT)
+                    .show()
+            } else if (editS == "") {
+                Toast.makeText(this.requireActivity(), "出勤時間を追加してください", Toast.LENGTH_SHORT).show()
+            } else if (editT == "") {
+                Toast.makeText(this.requireActivity(), "退勤時間を追加してください", Toast.LENGTH_SHORT).show()
+            } else if (sH != null && sH > 24) {
+                Toast.makeText(this.requireActivity(), "出勤時間は 24時までを入力してください", Toast.LENGTH_SHORT)
+                    .show()
+            } else if (sM != null && sM > 59) {
+                Toast.makeText(this.requireActivity(), "出勤時間は 59分までを入力してください", Toast.LENGTH_SHORT)
+                    .show()
+            } else if (tH != null && tH > 24) {
+                Toast.makeText(this.requireActivity(), "退勤時間は 24時までを入力してください", Toast.LENGTH_SHORT)
+                    .show()
+            } else if (tM != null && tM > 59) {
+                Toast.makeText(this.requireActivity(), "退勤時間は 59分までを入力してください", Toast.LENGTH_SHORT)
+                    .show()
+            } else {
+                val shukkin = editS.toIntOrNull()
+                val taikin = editT.toIntOrNull()
+                val kyukei = editL.toIntOrNull()
 
-                    val shukkin = editS.toIntOrNull()
-                    val taikin = editT.toIntOrNull()
-                    val kyukei = editL.toIntOrNull()
+                val data = Dakoku(
+                    id,
+                    name,
+                    date,
+                    shukkin,
+                    taikin,
+                    kyukei!!,
+                    0.0,
+                    ""
+                )
+                dakokuViewModel.insertOrUpdate(data)
+                dakokuViewModel.updateJitsudo(date, name)
+                Log.v("TAG", "data to insert : $data")
 
-                    val data = Dakoku(
-                        id,
-                        name,
-                        date,
-                        shukkin,
-                        taikin,
-                        kyukei!!,
-                        0.0,
-                        ""
-                    )
+                val totalJitsudo: Double =
+                    application.repository.getTotalJitsudo(name.toString())
+                jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
+                jitudoModel.setJitsudo(totalJitsudo)
 
-                    dakokuViewModel.insertOrUpdate(data)
-                    dakokuViewModel.updateJitsudo(date,name)
-                    Log.v("TAG", "data to insert : $data")
+                selectedDate = date.toString()
 
-
-                    val totalJitsudo: Double =
-                        application.repository.getTotalJitsudo(name.toString())
-                    jitudoModel = ViewModelProviders.of(this).get(JitudoViewModel::class.java)
-                    jitudoModel.setJitsudo(totalJitsudo)
-
-                    selectedDate = date.toString()
-
-                    //返したい情報をセット
-                    val dataTo = Bundle()
-                    dataTo.putString("when", selectedDate)
-                    dataTo.putString("toCalender", selectedDate)
-                    parentFragmentManager.setFragmentResult("input", dataTo)
-
-                    dismiss()
-
-                }
-
+                val dataTo = Bundle()
+                dataTo.putString("when", selectedDate)
+                dataTo.putString("toCalender", selectedDate)
+                parentFragmentManager.setFragmentResult("input", dataTo)
+                dismiss()
+            }
         }
 
         view.findViewById<LinearLayout>(R.id.btnNegative).setOnClickListener {
@@ -215,24 +217,25 @@ class UpdateDialogFragment : DialogFragment() {
 
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
-    private fun showAlertDialog(){
+    private fun showAlertDialog() {
         val alertDialog = AlertDialog.Builder(requireContext())
         alertDialog.setTitle("休憩時間を選んでください")
 
         val application = RestTimeApplication()
         val list: MutableList<Int> = application.lestTimeDao.getMutableList()
         val arrayList: ArrayList<Int> = ArrayList(list)
-        val stringArray: ArrayList<String> = arrayList.map { it.toString() }.toTypedArray().toCollection(
-            ArrayList()
-        )
-        stringArray.add(0,"休憩なし")
+        val stringArray: ArrayList<String> =
+            arrayList.map { it.toString() }.toTypedArray().toCollection(
+                ArrayList()
+            )
+        stringArray.add(0, "休憩なし")
 
         val array: Array<CharSequence> = stringArray.toArray(arrayOfNulls(0))
 
-        alertDialog.setSingleChoiceItems(array,0, { _, which ->
+        alertDialog.setSingleChoiceItems(array, 0, { _, which ->
             when (which) {
-                0 ->  editL.setText("0")
-                else ->  editL.setText("${array[which]}")
+                0 -> editL.setText("0")
+                else -> editL.setText("${array[which]}")
             }
         })
 
@@ -245,10 +248,9 @@ class UpdateDialogFragment : DialogFragment() {
         val alert = alertDialog.create()
         alert.setCanceledOnTouchOutside(true)
         alert.show()
-
     }
 
-    private fun reallyDeleted(dakoku: Dakoku){
+    private fun reallyDeleted(dakoku: Dakoku) {
         dakokuViewModel.delete(dakoku)
     }
 
@@ -258,7 +260,7 @@ class UpdateDialogFragment : DialogFragment() {
         val shukkin = arguments?.getString(KEY_SHUKKIN)
         if (shukkin == "null") {
             editS.setText("")
-        }else{
+        } else {
             editS.setText(shukkin)
         }
 
@@ -266,7 +268,7 @@ class UpdateDialogFragment : DialogFragment() {
         val taikin = arguments?.getString(KEY_TAIKIN)
         if (taikin == "null") {
             editT.setText("")
-        }else{
+        } else {
             editT.setText(taikin)
         }
 
@@ -274,13 +276,12 @@ class UpdateDialogFragment : DialogFragment() {
         val lest = arguments?.getString(KEY_LEST)
         if (lest == "null") {
             editL.setText("0")
-        }else{
+        } else {
             editL.setText(lest)
         }
 
         val editD = view.findViewById<EditText>(R.id.des_date)
-        editD.setText("${ arguments?.getString(KEY_DATE)}")
-
+        editD.setText("${arguments?.getString(KEY_DATE)}")
     }
 
     override fun onStart() {
@@ -306,19 +307,18 @@ class UpdateDialogFragment : DialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
-        Log.d("updateDialog","onDismiss")
+        Log.d("updateDialog", "onDismiss")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("updateDialog","onDestroy")
+        Log.d("updateDialog", "onDestroy")
         hideSystemUI()
-
     }
 
     private fun hideSystemUI() {
         activity?.window?.decorView?.apply {
-            systemUiVisibility = ( View.SYSTEM_UI_FLAG_LOW_PROFILE
+            systemUiVisibility = (View.SYSTEM_UI_FLAG_LOW_PROFILE
                     or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION

@@ -140,7 +140,6 @@ class MainFragment : Fragment() {
                 val marumeTime = getMarumeTime()
 
                 if (data == 0) {
-
                     val newdakoku =
                         Dakoku(0, userName, date, 0, marumeTime.toInt(), 0, 0.0, "")
                     dakokuViewModel.insert(newdakoku)
@@ -194,13 +193,11 @@ class MainFragment : Fragment() {
 
         when (key) {
             "shukkin" -> {
-                dakokuViewModel.updateShukkin(marumeTime, date, userName)
-                dakokuViewModel.updateJitsudo(date, userName)
+                updateShukkin(marumeTime,date)
                 setShukkinTimeText()
             }
             "taikin" -> {
-                dakokuViewModel.updateTaikin(marumeTime, date, userName)
-                dakokuViewModel.updateJitsudo(date, userName)
+                updateTaikin(marumeTime,date)
                 setTaikinTimeText()
                 showLestAlartDialog(date, userName)
             }
