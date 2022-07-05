@@ -107,7 +107,7 @@ class UpdateDialogFragment : DialogFragment() {
             name.toString()
         )
 
-        val closeButton = view.findViewById<ImageView>(R.id.closeImg)
+        val closeButton = view.findViewById<ImageView>(R.id.closeButton)
         closeButton.setOnClickListener {
             progress?.visibility = View.VISIBLE
             view.let {
@@ -115,7 +115,7 @@ class UpdateDialogFragment : DialogFragment() {
             }
         }
 
-        view.findViewById<LinearLayout>(R.id.btnPositive).setOnClickListener {
+        view.findViewById<LinearLayout>(R.id.saveButton).setOnClickListener {
             val editS =
                 view.findViewById<EditText>(R.id.des_shukkin).text.padStart(4, '0').toString()
             val sH = editS.substring(0, 2).toIntOrNull()
@@ -189,7 +189,7 @@ class UpdateDialogFragment : DialogFragment() {
             }
         }
 
-        view.findViewById<LinearLayout>(R.id.btnNegative).setOnClickListener {
+        view.findViewById<LinearLayout>(R.id.deleteButton).setOnClickListener {
             AlertDialog.Builder(requireActivity()) // FragmentではActivityを取得して生成
                 .setTitle("")
                 .setMessage("この打刻を削除しますか？")

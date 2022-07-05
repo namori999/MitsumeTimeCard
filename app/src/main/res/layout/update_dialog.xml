@@ -7,23 +7,8 @@
     android:layout_margin="40dp"
     >
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <ProgressBar
-            android:id="@+id/progress"
-            android:layout_width="50px"
-            android:layout_height="50px"
-            android:layout_gravity="center"
-            android:translationZ="2dp"
-            android:visibility="gone" />
-    </FrameLayout>
-
-
     <ImageView
-        android:id="@+id/closeImg"
+        android:id="@+id/closeButton"
         android:layout_width="80px"
         android:layout_height="80px"
         android:layout_gravity="left"
@@ -36,21 +21,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-
-        android:background="@color/colorAccent"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="15dp">
-
-
-
-    </LinearLayout>
-
 
     <LinearLayout
         android:id="@+id/description"
@@ -58,7 +28,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginStart="24dp"
-
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
         android:orientation="vertical"
@@ -200,7 +169,7 @@
         app:layout_constraintTop_toBottomOf="@+id/description">
 
         <LinearLayout
-            android:id="@+id/btnPositive"
+            android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -225,7 +194,7 @@
 
 
         <LinearLayout
-            android:id="@+id/btnNegative"
+            android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
