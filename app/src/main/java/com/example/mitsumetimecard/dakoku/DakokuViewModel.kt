@@ -76,7 +76,7 @@ open class DakokuViewModel(val repository: Repository) : ViewModel() {
     }
 
 
-    class ModelViewModelFactory(private val repository: Repository) : ViewModelProvider.Factory {
+    class ModelViewModelFactory(private val repository: Repository) : ViewModelProvider.NewInstanceFactory() {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DakokuViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")

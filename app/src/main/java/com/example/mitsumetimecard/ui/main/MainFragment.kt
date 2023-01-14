@@ -28,6 +28,7 @@ import com.example.mitsumetimecard.setting.RestTimeApplication
 import com.example.mitsumetimecard.updatedialog.TimePickerFragment
 import com.example.mitsumetimecard.updatedialog.UpdateDialogFragment
 import com.google.firebase.database.DatabaseReference
+import kotlinx.coroutines.runBlocking
 import java.sql.Time
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -63,6 +64,14 @@ class MainFragment : Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        model = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
+        userName = model.getSelectedName()
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -74,6 +83,15 @@ class MainFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+        //buttons
+        shukkinBtn = view.findViewById<Button>(R.id.shukkinBtn)
+        taikinBtn = view.findViewById<Button>(R.id.taikinBtn)
+        val context = this.requireContext()
+
+        runBlocking {
+            initiallizeButton()
+        }
 
         //get date and time
         val textDate = view.findViewById<TextView>(R.id.textDate)
@@ -88,15 +106,6 @@ class MainFragment : Fragment() {
         //data to insert
         val date = onlyDate.toString()
 
-        //buttons
-        shukkinBtn = view.findViewById<Button>(R.id.shukkinBtn)
-        taikinBtn = view.findViewById<Button>(R.id.taikinBtn)
-        val context = this.requireContext()
-
-        //get username
-        model = ViewModelProviders.of(requireActivity()).get(MainViewModel::class.java)
-        userName = model.getSelectedName()
-        initiallizeButton()
 
         //onClick
         view.setOnClickListener() {
@@ -116,28 +125,30 @@ class MainFragment : Fragment() {
                 dakokuViewModel.insertOriginalShukkin(marumeTime, date, userName)
                 Toast.makeText(requireContext(), "出勤しました", Toast.LENGTH_SHORT)
                     .show()
-                updateButtonView(newdakoku, shukkinBtn, taikinBtn!!, context)
+                updateButtonView(newdakoku, shukkinBtn, taikinBtn, context)
             } else {
                 Log.v("TAG", "data is already here")
                 AlertDialog.Builder(this.requireActivity()) // FragmentではActivityを取得して生成
                     .setTitle("すでに出勤しています")
                     .setMessage("出勤時間を更新しますか？")
-                    .setPositiveButton("更新する", { dialog, which ->
+                    .setPositiveButton("更新する") { dialog, which ->
                         updateDakoku("shukkin")
-                    })
-                    .setNegativeButton("キャンセル", { dialog, which ->
+                    }
+                    .setNegativeButton("キャンセル") { dialog, which ->
                         MainActivity().setViewTimer()
                         Log.v("TAG", "shukkin update is canseled")
-                    })
+                    }
                     .show()
             }
         }
 
         taikinBtn.setOnClickListener() {
             uncompletedDakokuList = repository.getDakokuOnlyShukkin(userName)
+            val marumeTime = getMarumeTime()
+
             if (uncompletedDakokuList.isNullOrEmpty()) {
+                ///出勤も退勤もまだ
                 data = repository.getDataRowCount(date, userName)
-                val marumeTime = getMarumeTime()
 
                 if (data == 0) {
                     val newdakoku =
@@ -150,11 +161,15 @@ class MainFragment : Fragment() {
                 }
 
             } else {
+                ///出勤はしたが退勤がまだ
                 val lastShukkinDate = uncompletedDakokuList.last().date
                 val today = LocalDate.now().toString()
                 if (lastShukkinDate == today) {
+                    ///出勤はしたが退勤がまだ かつ出勤は今日の出勤
+                    dakokuViewModel.insertOriginalTaikin(marumeTime, date, userName)
                     updateDakoku("taikin")
                 } else {
+                    ///出勤はしたが退勤がまだ 出勤は今日より前
                     showTaikinAlartDialog(lastShukkinDate!!, userName)
                 }
             }
@@ -193,11 +208,11 @@ class MainFragment : Fragment() {
 
         when (key) {
             "shukkin" -> {
-                updateShukkin(marumeTime,date)
+                updateShukkin(marumeTime, date)
                 setShukkinTimeText()
             }
             "taikin" -> {
-                updateTaikin(marumeTime,date)
+                updateTaikin(marumeTime, date)
                 setTaikinTimeText()
                 showLestAlartDialog(date, userName)
             }
@@ -208,6 +223,7 @@ class MainFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun initiallizeButton() {
         uncompletedDakokuList = repository.getDakokuOnlyShukkin(userName)
+
         val today = LocalDate.now()
         val yesterDay = today.minusDays(1)
         val context = this.requireContext()
@@ -220,7 +236,6 @@ class MainFragment : Fragment() {
             } else {
                 updateButtonView(currentData, shukkinBtn, taikinBtn, context)
             }
-
         } else if (data == 0) {
             taikinBtn.setBackgroundTintList(
                 ContextCompat.getColorStateList(

@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.example.mitsumetimecard.dakoku.Dakoku
 import com.example.mitsumetimecard.dakoku.DakokuApplication
 import com.example.mitsumetimecard.ui.main.MainViewModel
 import com.google.android.material.tabs.TabLayout
@@ -97,6 +98,10 @@ class MainActivity : AppCompatActivity() {
         val b = Bundle()
         b.putString("COMMON_NAME_KEY", name)
         model.setCurrentName(name)
+
+        //set dakoku by username
+        val list: List<Dakoku> = application.repository.getDakokuListByName(name)
+        model.setDakokuByName(list)
 
         // removing toolbar elevation
         val tabLayout = findViewById<TabLayout>(R.id.tab_layout)
